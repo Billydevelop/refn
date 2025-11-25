@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>캐릭터 이름 | 레픈</title>
+  <link rel="stylesheet" href="./css/common.css">
+  <link rel="stylesheet" href="./css/index.css">
+  <link rel="stylesheet" href="./css/character.css">
+
+</head>
+
+<body data-page="character" class="page page-character">
+  <div class="app">
+    <!-- 상단 헤더: menu.html 패턴 적용 -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button class="back-btn" id="mobileNavBtn" aria-label="메뉴 열기">
+          ☰
+        </button>
+        <span class="top-title">캐릭터 채팅</span>
+      </div>
+      <div class="top-bar-right">
+        <a href="/create-character.html" class="top-add">+ 캐릭터 만들기</a>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- 사이드바 (공통) -->
+      <div id="sidebar-container"></div>
+
+      <!-- 전역 드로어 (공통) -->
+      <div id="drawer-container"></div>
+
+      <!-- 메인 -->
+      <main class="main-area page-main">
+        <div class="character-layout">
+          <!-- 좌측: 채팅 영역 -->
+          <section class="character-chat card">
+            <!-- 캐릭터 헤더 -->
+            <header class="character-chat__header">
+              <div class="character-chat__info">
+                <div class="character-chat__avatar">
+                  <img src="/assets/img/sample-character-01.png" alt="캐릭터 이름" />
+                </div>
+                <div>
+                  <div class="character-chat__name-row">
+                    <h1 class="character-chat__name">서은빈</h1>
+                    <span class="badge badge--share">수익 쉐어</span>
+                  </div>
+                  <div class="character-chat__meta">
+                    <span>👍 1.6K</span>
+                    <span>💬 100</span>
+                    <span>👀 20.2K</span>
+                  </div>
+                  <p class="character-chat__summary">
+                    게시까지 이사한이 셀카를 잘못 보낸 것 같다
+                  </p>
+                </div>
+              </div>
+              <div class="character-chat__actions">
+                <button class="btn btn--ghost btn--small">팔로우</button>
+                <button class="btn btn--primary btn--small">좋아요</button>
+                <button class="side-toggle-btn" id="sideToggleBtn" title="패널 열기">◀</button>
+              </div>
+            </header>
+
+            <!-- 실제 채팅 메시지 영역 -->
+            <div class="chat-window" id="chatWindow">
+              <!-- 예시 메시지 -->
+              <div class="chat-message chat-message--character">
+                <div class="chat-message__avatar">
+                  <img src="/assets/img/sample-character-01.png" alt="캐릭터" />
+                </div>
+                <div class="chat-message__bubble">
+                  <div class="chat-message__name">서은빈</div>
+                  <div class="chat-message__text">
+                    하단의 입력창에서 말을 걸어줘! 오늘은 뭐 하고 있었어?
+                  </div>
+                  <div class="chat-message__meta">방금 전</div>
+                </div>
+              </div>
+
+              <div class="chat-message chat-message--user">
+                <div class="chat-message__bubble">
+                  <div class="chat-message__name">나</div>
+                  <div class="chat-message__text">
+                    그냥 유튜브 보면서 쉬고 있었어 ㅎㅎ
+                  </div>
+                  <div class="chat-message__meta">방금 전</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 입력 영역 -->
+            <form class="chat-input" id="chatForm">
+              <button type="button" class="chat-input__icon-button" title="음성 입력">
+                🎙
+              </button>
+              <textarea class="chat-input__textarea" placeholder="메시지를 입력하거나 마이크 아이콘으로 말해보세요"></textarea>
+              <button type="submit" class="btn btn--primary chat-input__send">
+                전송
+              </button>
+            </form>
+          </section>
+
+          
+
+          <!-- 우측: 캐릭터 정보 / 설정 패널 -->
+          <aside class="character-side">
+            <div class="card character-side__card">
+              <div class="tabs tabs--underline">
+                <button class="tab tab--active" data-panel="profilePanel">상세 정보</button>
+                <button class="tab" data-panel="guidePanel">플레이 가이드</button>
+                <button class="tab" data-panel="creatorPanel">크리에이터</button>
+              </div>
+
+              <!-- 상세 정보 패널 -->
+              <div class="panel panel--active" id="profilePanel">
+                <h2 class="panel__title">캐릭터 설명</h2>
+                <p class="panel__text">
+                  캐릭터의 성격이나 사사, 과거 사건 등 상세한 내용을 작성해 주세요.
+                </p>
+
+                <dl class="detail-list">
+                  <div class="detail-list__row">
+                    <dt>장르</dt>
+                    <dd>일상, 로맨스</dd>
+                  </div>
+                  <div class="detail-list__row">
+                    <dt>태깃</dt>
+                    <dd>연애/친구</dd>
+                  </div>
+                  <div class="detail-list__row">
+                    <dt>해시태그</dt>
+                    <dd>#여사친 #공부 #대학</dd>
+                  </div>
+                </dl>
+
+                <h3 class="panel__subtitle">음성</h3>
+                <div class="voice-preview">
+                  <button class="btn btn--ghost btn--small">샘플 듣기 ▶</button>
+                  <span class="voice-preview__label">방송 자료 기반 보이스</span>
+                </div>
+              </div>
+
+              <!-- 플레이 가이드 패널 -->
+              <div class="panel" id="guidePanel">
+                <h2 class="panel__title">플레이 가이드</h2>
+                <p class="panel__text">
+                  이 캐릭터는 일상 대화와 연애 상담에 최적화되어 있어요.
+                  과한 폭력/수위 있는 요청에는 응답하지 않아요.
+                </p>
+              </div>
+
+              <!-- 크리에이터 패널 -->
+              <div class="panel" id="creatorPanel">
+                <h2 class="panel__title">크리에이터 & 수익 쉐어</h2>
+                <div class="creator-info">
+                  <div class="creator-info__row">
+                    <span class="creator-info__label">캐릭터 제작자</span>
+                    <span class="creator-info__value">@고요한판다84497</span>
+                  </div>
+                  <div class="creator-info__row">
+                    <span class="creator-info__label">수익 쉐어</span>
+                    <span class="creator-info__value">50% (플랫폼) / 50% (크리에이터)</span>
+                  </div>
+                </div>
+
+                <div class="creator-actions">
+                  <button class="btn btn--ghost btn--full">
+                    이 캐릭터로 방송하기 가이드 보기
+                  </button>
+                  <button class="btn btn--ghost btn--full">
+                    내 방송 자료 업로드하고 말투 맞춤화
+                  </button>
+                </div>
+
+                <!-- 내가 만든 캐릭터일 때만 노출 -->
+                <div class="creator-actions creator-actions--owner">
+                  <a href="/create-character.html?id=123" class="btn btn--primary btn--full">
+                    캐릭터 설정 수정하기
+                  </a>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- 전역 supabase 클라이언트 생성 -->
+  <script src="js/common.js"></script>
+  <script src="js/authWidget.js"></script>
+  <script src="js/credits.js"></script>
+  <script src="js/character.js"></script>
+</body>
+
+</html>

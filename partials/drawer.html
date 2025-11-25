@@ -1,0 +1,60 @@
+<!-- partials/drawer.html -->
+<!-- 데스크탑용 토글 버튼 -->
+
+<!-- 전역 드로어 -->
+<section class="drawer drawer-hidden" id="globalDrawer">
+
+    <!-- 데스크탑용 토글 버튼 -->
+    <header class="drawer-header">
+
+        <!-- 모바일 상단 네비 (홈/스튜디오/메뉴) -->
+
+        <nav class="drawer-nav">
+            <button class="drawer-nav-item" data-page="home" onclick="location.href='index.html'">
+                <img src="./assets/sidebar-h.png" class="drawer-nav-icon" alt="홈" />
+                <span>홈</span>
+            </button>
+            <button class="drawer-nav-item" data-page="studio" onclick="location.href='studio.html'">
+                <img src="./assets/sidebar-s.png" class="drawer-nav-icon" alt="스튜디오" />
+                <span>스튜디오</span>
+            </button>
+            <button class="drawer-nav-item" data-page="menu" onclick="location.href='characters.html'">
+                <img src="./assets/sidebar-c.png" class="drawer-nav-icon" alt="메뉴" />
+                <span>캐릭터챗</span>
+            </button>
+            <button class="drawer-nav-item" data-page="menu" onclick="location.href='menu.html'">
+                <img src="./assets/sidebar-m.png" class="drawer-nav-icon" alt="메뉴" />
+                <span>Ai 메뉴</span>
+            </button>
+            <button class="drawer-nav-item" data-page="menu" onclick="location.href='works.html'">
+                <img src="./assets/sidebar-w.png" class="drawer-nav-icon" alt="메뉴" />
+                <span>works</span>
+            </button>
+        </nav>
+        <div class="drawer-header-top">
+            <div class="drawer-tabs">
+                <button type="button" class="drawer-tab active" data-drawer-tab="all">
+                    전체
+                </button>
+                <button type="button" class="drawer-tab" data-drawer-tab="chat">
+                    채팅
+                </button>
+                <button type="button" class="drawer-tab" data-drawer-tab="image">
+                    이미지
+                </button>
+                <button type="button" class="drawer-tab" data-drawer-tab="etc">
+                    자소서
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="drawer-list-wrap">
+        <div class="drawer-section-title">새 채팅</div>
+        <div class="drawer-list" id="drawerList"></div>
+        <div class="drawer-empty" id="drawerEmpty">
+            아직 생성된 콘텐츠가 없어요.<br />
+            스튜디오에서 이미지를 생성해보세요.
+        </div>
+    </div>
+</section>

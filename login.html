@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>로그인 | REFN</title>
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="login-title">REFN 로그인</div>
+    <div class="login-desc">
+      더욱 빠르고 똑똑해진 기능을 사용하려면 로그인하세요.
+    </div>
+
+    <button id="google-login-btn" class="google-btn">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg">
+      구글로 로그인
+    </button>
+
+    <pre id="status"></pre>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  // 1) 여기에 본인 프로젝트 값 넣기
+  const SUPABASE_URL = 'https://hvpovtlvrzcqbjdebegm.supabase.co';      // Supabase 프로젝트 URL
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2cG92dGx2cnpjcWJqZGViZWdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MjMxODAsImV4cCI6MjA3OTE5OTE4MH0.B4KsZOL9KWW2q14pmzmexkzIliJ7oe8xSEZdrXoRNBM';               // anon public key
+
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const statusEl = document.getElementById('status');
+
+    function log(msg, data) {
+      statusEl.textContent = msg + (data ? '\n' + JSON.stringify(data, null, 2) : '');
+    }
+
+    document.getElementById('google-login-btn')
+      .addEventListener('click', async () => {
+        const { error } = await client.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin
+          }
+        });
+        if (error) log('로그인 에러', error);
+    });
+
+    (async () => {
+      const { data } = await client.auth.getSession();
+      if (data.session) log('이미 로그인됨:', data.session);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,360 @@
+       * {
+
+            /* 홈 전용 레이아웃 */
+            .home-wrapper {
+                width: 960px;
+                max-width: 100%;
+                padding: 56px 24px 80px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .logo-area {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+
+            /* 로고 오브젝트 */
+            .logo-orb {
+                position: relative;
+                width: 110px;
+                height: 110px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.25));
+                animation:
+                    orb-float 4.8s ease-in-out infinite,
+                    orb-rotate 18s linear infinite;
+            }
+
+            .logo-orb-img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                image-rendering: auto;
+            }
+
+            .logo-orb-glow {
+                position: absolute;
+                inset: 8px;
+                border-radius: 50%;
+                background: radial-gradient(circle at 30% 20%,
+                        rgba(255, 255, 255, 0.9),
+                        transparent 55%),
+                    radial-gradient(circle at 80% 80%,
+                        rgba(0, 0, 0, 0.9),
+                        transparent 60%);
+                mix-blend-mode: screen;
+                opacity: 0.55;
+                pointer-events: none;
+                animation: orb-glow 3.2s ease-in-out infinite;
+            }
+
+            .logo-sub {
+                font-size: 13px;
+                color: #8b8dac;
+                text-align: center;
+                margin-bottom: 40px;
+            }
+
+            /* 애니메이션 */
+            @keyframes orb-float {
+                0% {
+                    transform: translateY(0px) scale(1);
+                }
+
+                50% {
+                    transform: translateY(-10px) scale(1.02);
+                }
+
+                100% {
+                    transform: translateY(0px) scale(1);
+                }
+            }
+
+            @keyframes orb-rotate {
+                0% {
+                    transform: rotate(0deg);
+                }
+
+                50% {
+                    transform: rotate(2deg);
+                }
+
+                100% {
+                    transform: rotate(0deg);
+                }
+            }
+
+            @keyframes orb-glow {
+                0% {
+                    opacity: 0.45;
+                }
+
+                50% {
+                    opacity: 0.9;
+                }
+
+                100% {
+                    opacity: 0.45;
+                }
+            }
+
+            /* 검색 카드 */
+            .search-card {
+                width: 640px;
+                max-width: 100%;
+            }
+
+            .search-input-wrap {
+                background: #ffffff;
+                border-radius: 20px;
+                border: 1px solid #ececf2;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.03);
+                padding: 12px 18px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .search-icon-plus {
+                font-size: 18px;
+                color: #b3b5c7;
+            }
+
+            .search-input {
+                border: none;
+                outline: none;
+                flex: 1;
+                font-size: 14px;
+                color: #58596e;
+            }
+
+            .search-input::placeholder {
+                color: #b2b4c4;
+            }
+
+            /* 검색 하단 옵션 */
+            .search-options {
+                margin-top: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                font-size: 12px;
+                color: #77788e;
+            }
+
+            .search-left,
+            .search-right {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .chip-outline {
+                border-radius: 999px;
+                border: 1px solid #d7daf0;
+                padding: 6px 14px;
+                font-size: 12px;
+                background: #ffffff;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .chip-outline.blue {
+                color: #3f7dff;
+                border-color: #3f7dff;
+                background: #f4f6ff;
+            }
+
+            .chip-outline .dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 999px;
+                background: #3f7dff;
+            }
+
+            .icon-ellipsis {
+                font-size: 18px;
+                cursor: pointer;
+                padding: 0 4px;
+            }
+
+            .divider-dot {
+                width: 4px;
+                height: 4px;
+                border-radius: 999px;
+                background: #c2c4d6;
+            }
+
+            .icon-arrow-down {
+                font-size: 10px;
+                margin-left: 4px;
+            }
+
+            /* 하이라이트 배너 */
+            .highlight-row {
+                width: 720px;
+                max-width: 100%;
+                margin-top: 40px;
+                display: grid;
+                grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+                gap: 18px;
+            }
+
+            .banner-main {
+                border-radius: 18px;
+                padding: 28px 28px 22px;
+                background: linear-gradient(135deg, #ff43c0 0%, #ffb200 40%, #ffc64d 100%);
+                color: #ffffff;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                min-height: 170px;
+            }
+
+            .banner-main-title {
+                font-weight: 700;
+                font-size: 20px;
+                margin-bottom: 6px;
+            }
+
+            .banner-main-desc {
+                font-size: 13px;
+                opacity: 0.95;
+            }
+
+            .banner-main-link {
+                margin-top: 22px;
+                font-size: 12px;
+                text-decoration: underline;
+                opacity: 0.95;
+                cursor: pointer;
+            }
+
+            .banner-dots {
+                margin-top: 18px;
+                display: flex;
+                gap: 6px;
+            }
+
+            .banner-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.5);
+            }
+
+            .banner-dot.active {
+                width: 18px;
+                border-radius: 999px;
+                background: #ffffff;
+            }
+
+            .banner-side {
+                border-radius: 18px;
+                padding: 22px 22px 18px;
+                background: #f6f7ff;
+                color: #25263a;
+                font-size: 12px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .banner-side-title {
+                font-weight: 600;
+                margin-bottom: 4px;
+                font-size: 13px;
+            }
+
+            .banner-side-sub {
+                font-weight: 700;
+                margin-bottom: 10px;
+                font-size: 14px;
+            }
+
+            .banner-side-text {
+                color: #676885;
+                line-height: 1.5;
+                margin-bottom: 14px;
+            }
+
+            .banner-side-btn {
+                margin-top: 6px;
+                align-self: flex-start;
+                padding: 9px 18px;
+                border-radius: 999px;
+                border: none;
+                cursor: pointer;
+                background: linear-gradient(90deg, #4c5cff, #9a3dff);
+                color: #ffffff;
+                font-size: 12px;
+                font-weight: 500;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .banner-side-btn span.arrow {
+                font-size: 13px;
+                transform: translateY(1px);
+            }
+
+            /* 하단 3 버튼 */
+            .bottom-shortcuts {
+                margin-top: 40px;
+                display: flex;
+                gap: 80px;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                color: #77788e;
+            }
+
+            .shortcut-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+            }
+
+            .shortcut-circle {
+                width: 40px;
+                height: 40px;
+                border-radius: 999px;
+                border: 1px solid #d7daf0;
+                background: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+            }
+
+            .shortcut-label {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .shortcut-label .dot-yellow {
+                width: 6px;
+                height: 6px;
+                border-radius: 999px;
+                background: #ffc400;
+            }
+
+            @media (max-width: 960px) {
+                .highlight-row {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+        }

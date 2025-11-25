@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>REFN! 홈</title>
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+<style>
+    /* === 메인 공통 영역 === */
+    .main-area {
+
+        align-items: center;
+
+    }
+</style>
+
+<body data-page="home">
+    <div class="app">
+        <!-- 상단 헤더 -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <!-- 기존: <button class="back-btn" ...>‹</button> -->
+                <button class="back-btn" id="mobileNavBtn" aria-label="메뉴 열기">
+                    ☰
+                </button>
+                <span class="top-title">새로운 채팅</span>
+                <span class="top-add">+</span>
+            </div>
+
+        </header>
+
+        <div class="content">
+            <!-- 왼쪽 사이드바 -->
+            <div id="sidebar-container"></div>
+
+            <!-- 🔹 전역 드로어 -->
+            <div id="drawer-container"></div>
+
+
+            <!-- 메인 -->
+            <main class="main-area">
+                <div class="home-wrapper">
+                    <section class="logo-area">
+                        <div class="logo-orb">
+                            <img src="./assets/refn-logo1.png" alt="refn logo orb" class="logo-orb-img" />
+                            <div class="logo-orb-glow"></div>
+                        </div>
+
+                        <div class="logo-sub">
+                            여러 기능을 한가지만에 모아둔 곳, 레픈을 시작해보세요
+                        </div>
+                    </section>
+
+
+                    <!-- 검색 카드 -->
+                    <section class="search-card">
+                        <div class="search-input-wrap">
+                            <div class="search-icon-plus">+</div>
+                            <input class="search-input" placeholder="더욱 빨라지고 똑똑해진 레픈을 경험해보세요" />
+                        </div>
+
+                        <div class="search-options">
+                            <div class="search-left">
+                                <button class="chip-outline blue">
+                                    <span class="dot"></span>
+                                    브라우저
+                                </button>
+                                <span class="icon-ellipsis">⋯</span>
+                                <span>인터넷 검색에 자동으로 돕고있어요</span>
+                            </div>
+                            <div class="search-right">
+                                <span>추가 기능</span>
+                                <span class="icon-arrow-down">▾</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 배너 -->
+                    <section class="highlight-row">
+                        <div class="banner-main" onclick="location.href='studio.html'">
+                            <div>
+                                <div class="banner-main-title">레픈 스튜디오 런칭</div>
+                                <div class="banner-main-desc">
+                                    최신 이미지, 비디오 생성 오늘 바로 사용해보세요!
+                                </div>
+                                <div class="banner-main-link">
+                                    레픈에서 자세히 보기 &gt;
+                                </div>
+                            </div>
+                            <div class="banner-dots">
+                                <div class="banner-dot active"></div>
+                                <div class="banner-dot"></div>
+                                <div class="banner-dot"></div>
+                                <div class="banner-dot"></div>
+                            </div>
+                        </div>
+
+                        <div class="banner-side">
+                            <div>
+                                <div class="banner-side-title">공지사항</div>
+                                <div class="banner-side-sub">플러스 플랜 무료 체험!</div>
+                                <div class="banner-side-text">
+                                    10일간 플러스 플랜을 통해<br />
+                                    5,000 크레딧이 자동 충전 혜택을 받아보세요!
+                                </div>
+                            </div>
+                            <button class="banner-side-btn">
+                                무료 체험 시작
+                                <span class="arrow">→</span>
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- 하단 숏컷 -->
+                    <section class="bottom-shortcuts">
+                        <div class="shortcut-item">
+                            <div class="shortcut-circle">💬</div>
+                            <div class="shortcut-label">
+                                <span>카카오톡</span>
+                                <span class="dot-yellow"></span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item" onclick="location.href='menu.html'">
+                            <div class="shortcut-circle">☰</div>
+                            <div class="shortcut-label">
+                                <span>Ai 메뉴</span>
+                            </div>
+                        </div>
+                        <div class="shortcut-item" onclick="location.href='studio.html'">
+                            <div class="shortcut-circle">🎬</div>
+                            <div class="shortcut-label">
+                                <span>스튜디오</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // 추후 인터랙션 들어갈 수 있도록 최소 구조만.
+        // 예시: 메인 배너 더미 슬라이드 토글
+        document.querySelectorAll(".banner-dot").forEach((dot, idx, dots) => {
+            dot.addEventListener("click", () => {
+                dots.forEach((d) => d.classList.remove("active"));
+                dot.classList.add("active");
+            });
+        });
+    </script>
+    <!-- supabase-js CDN 반드시 최우선 -->
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- 전역 supabase 클라이언트 생성 -->
+    <script src="js/common.js"></script>
+
+    <!-- 로그인 위젯 (authArea 관리) -->
+    <script src="js/authWidget.js"></script>
+    <script src="js/index.js"></script>
+</body>
+
+</html>

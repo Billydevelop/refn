@@ -1,0 +1,160 @@
+/* css/credits.css */
+
+/* ---------------------------------------------------- */
+/* Credit Upsell Modal Specific Styles */
+/* ---------------------------------------------------- */
+.credit-upsell-modal {
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    padding: 1.6rem 1.8rem 1.8rem;
+    max-width: 560px; /* 기본 모바일/좁은 화면 최대 너비 */
+    width: 100%;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+    position: relative;
+}
+
+.cu-title {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.cu-sub {
+    margin-top: .4rem;
+    font-size: .9rem;
+    color: var(--text-secondary);
+}
+
+.cu-section {
+    margin-top: 1.4rem; /* 모바일/수직 레이아웃용 마진 */
+}
+
+.cu-section-title {
+    font-size: 1rem;
+    margin-bottom: .5rem;
+    color: var(--text-primary);
+}
+
+.cu-list-item {
+    background: #dadada;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    padding: .8rem 1rem;
+    margin-bottom: .5rem;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+.cu-list-item:hover {
+    background: #ff8d22;
+}
+
+.cu-item-name {
+    font-size: .95rem;
+    color: var(--text-primary);
+}
+
+.cu-item-desc {
+    font-size: .8rem;
+    color: var(--text-secondary);
+    margin-top: .25rem;
+}
+
+.cu-item-price {
+    margin-top: .4rem;
+    font-size: .85rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.cu-ad-desc {
+    font-size: .85rem;
+    color: var(--text-secondary);
+}
+
+.cu-ad-info {
+    margin-top: .4rem;
+    font-size: .8rem;
+    color: var(--text-secondary);
+}
+
+/* ---------------------------------------------------- */
+/* Global Modal/Backdrop Styles */
+/* ---------------------------------------------------- */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(5, 7, 22, 0.6);
+    z-index: 1200;
+    padding: 20px;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-inner {
+    position: relative;
+    background: white;
+    max-width: 96vw;
+    max-height: 92vh;
+    overflow: auto;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* ---------------------------------------------------- */
+/* PC/Desktop Layout Optimization (Min-width: 560px 이상) */
+/* ---------------------------------------------------- */
+@media (min-width: 560px) {
+
+    /* 모달 너비를 확장하여 수평 공간 확보 */
+    .credit-upsell-modal {
+        max-width: 850px; 
+    }
+    
+    /* cu-section들을 담을 컨테이너에 Flexbox 적용 */
+    .cu-options-container {
+        display: flex;
+        gap: 20px; /* 섹션 간의 간격 */
+    }
+
+    /* cu-section의 수직 마진을 제거하고 Flexbox로 공간 분배 */
+    .cu-section {
+        margin-top: 0; 
+        flex: 1; /* 기본적으로 공간을 균등하게 차지 */
+        min-width: 0;
+    }
+    
+    /* 광고 섹션은 너비를 고정하여 다른 섹션보다 좁게 유지 */
+    .cu-section-ad {
+        flex: 0 0 200px; 
+    }
+
+    /* 목록이 길어질 경우 스크롤을 섹션 내부에 한정 */
+    #cuSubscriptionArea,
+    #cuPackArea {
+        max-height: 400px; 
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+}

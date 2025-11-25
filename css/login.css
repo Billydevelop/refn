@@ -1,0 +1,89 @@
+/* 전체 배경 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Inter", "Noto Sans KR", sans-serif;
+    background: #F6F7FB;
+    color: #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* 로그인 카드 */
+.login-container {
+    width: 420px;
+    padding: 40px 36px;
+    background: #ffffff;
+    border-radius: 22px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+/* 제목 */
+.login-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+/* 설명 문구 */
+.login-desc {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 28px;
+    line-height: 1.4;
+}
+
+/* 구글 로그인 버튼 */
+.google-btn {
+    width: 100%;
+    padding: 14px 0;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    transition: 0.2s ease;
+}
+
+.google-btn:hover {
+    background: #fafafa;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.google-btn img {
+    width: 20px;
+}
+
+/* 세션 체크 영역 */
+#status {
+    margin-top: 20px;
+    padding: 10px;
+    text-align: left;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    height: 150px;
+    overflow: auto;
+    font-size: 13px;
+    white-space: pre-wrap;
+}
+
+/* 페이지 전체 부드러운 애니메이션 */
+.login-container, .google-btn {
+    animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}

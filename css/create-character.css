@@ -1,0 +1,285 @@
+.page-create-character {
+    background: #050608;
+    color: #f5f5f5;
+}
+
+/* 전체 레이아웃 */
+.create-layout {
+    display: flex;
+    gap: 24px;
+    padding: 16px 20px 32px;
+    box-sizing: border-box;
+    align-items: flex-start;
+}
+
+.create-layout__main {
+    flex: 3;
+    min-width: 0;
+}
+
+.create-layout__preview {
+    flex: 1.6;
+    min-width: 260px;
+}
+
+/* 카드 기본 */
+.card {
+    background: #15171c;
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+/* 스텝 탭 */
+.steps-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #262a33;
+    padding-bottom: 4px;
+}
+
+.steps-nav__item {
+    border: none;
+    background: transparent;
+    color: #c3c8d4;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.steps-nav__item--active {
+    background: #ff4343;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* 각 스텝 패널 */
+.step {
+    display: none;
+}
+
+.step--active {
+    display: block;
+}
+
+.step__title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+/* 필드 */
+.field-group {
+    margin-bottom: 14px;
+}
+
+.field__label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.field-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.field-inline--right {
+    justify-content: flex-end;
+}
+
+.field__control {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid #2b2e36;
+    background: #050608;
+    padding: 8px 10px;
+    font-size: 13px;
+    color: #f5f5f5;
+}
+
+.field__control--textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.field__control::placeholder {
+    color: #7b8191;
+}
+
+.field__hint {
+    font-size: 11px;
+    color: #8c93a4;
+    margin-top: 4px;
+}
+
+/* 파일 입력 숨기고 텍스트처럼 */
+.field-group input[type="file"] {
+    font-size: 12px;
+    color: #c3c8d4;
+}
+
+/* 토글 / 라디오 */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.radio {
+    display: flex;
+    gap: 6px;
+    font-size: 13px;
+    color: #c3c8d4;
+}
+
+.radio input {
+    margin-top: 2px;
+}
+
+.toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #c3c8d4;
+}
+
+.toggle input {
+    margin: 0;
+}
+
+/* 스텝 하단 버튼 */
+.step__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+/* 미리보기 카드 */
+.preview-header__title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.preview-card {
+    background: #090b10;
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03);
+    overflow: hidden;
+}
+
+.preview-card__thumb {
+    position: relative;
+    padding: 16px 16px 0;
+}
+
+.preview-card__thumb img {
+    width: 100%;
+    border-radius: 4px;
+    object-fit: cover;
+    display: block;
+    background: #1b1e25;
+}
+
+.preview-card__like {
+    position: absolute;
+    right: 24px;
+    bottom: 10px;
+    border-radius: 4px;
+    padding: 4px 10px;
+    border: none;
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #f5f5f5;
+}
+
+.preview-card__body {
+    padding: 12px 16px 14px;
+}
+
+.preview-card__name {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.preview-card__meta {
+    font-size: 11px;
+    color: #8c93a4;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.preview-card__tags {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.preview-card__tags .tag {
+    background: #20232b;
+    color: #c3c8d4;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 11px;
+}
+
+/* 버튼(필요한 최소한만) */
+.btn--secondary {
+    background: #20232b;
+    color: #f5f5f5;
+    border: 1px solid #2b2e36;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.btn--ghost {
+    background: transparent;
+    color: #c3c8d4;
+    border-radius: 4px;
+    border: 1px solid #2b2e36;
+    font-size: 12px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.btn--primary {
+    background: #ff4343;
+    color: #fff;
+    border-radius: 4px;
+    border: none;
+    font-size: 13px;
+    padding: 6px 16px;
+    cursor: pointer;
+}
+
+/* 반응형 */
+@media (max-width: 960px) {
+    .create-layout {
+        flex-direction: column;
+    }
+
+    .create-layout__preview {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .create-layout {
+        padding: 12px 12px 24px;
+    }
+
+}

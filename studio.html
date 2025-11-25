@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <link rel="stylesheet" href="./css/common.css">
+    <link rel="stylesheet" href="./css/studio.css">
+
+    <title>REFN! 스튜디오</title>
+</head>
+
+<body data-page="studio">
+    <div class="app">
+        <!-- 상단 헤더 -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="back-btn" id="mobileNavBtn" aria-label="메뉴 열기">
+                    ☰
+                </button>
+                <span class="top-title">스튜디오</span>
+                <span class="top-add">+</span>
+            </div>
+
+
+        </header>
+
+        <div class="content">
+            <!-- 좌측 사이드바 -->
+            <div id="sidebar-container"></div>
+
+
+            <!-- 🔹 전역 드로어 -->
+            <div id="drawer-container"></div>
+
+
+            <!-- 메인 -->
+            <main class="main-area">
+                <div class="studio-wrapper">
+                    <!-- 상단 타이틀 -->
+                    <section class="studio-header">
+                        <div class="studio-title-box">
+                            <div class="studio-title">레픈 스튜디오</div>
+                            <div class="studio-subtitle">
+                                텍스트 프롬프트와 키워드를 기반으로 레퍼런스를 먼저 탐색하고,
+                                선택한 레퍼런스로 이미지를 생성해보세요. (바로 생성도 가능)
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 본문 2컬럼 -->
+                    <section class="studio-main">
+                        <!-- 왼쪽: 프롬프트 & 키워드 -->
+                        <div class="panel">
+                            <div class="panel-title">프롬프트 설정</div>
+                            <div class="panel-sub">
+                                원하는 이미지를 자연어로 설명하고, 키워드를 추가하면 더 정확한
+                                레퍼런스를 찾을 수 있어요.
+                            </div>
+
+                            <div>
+                                <div class="field-label">텍스트 프롬프트</div>
+                                <textarea id="promptInput" class="textarea"
+                                    placeholder="예) 노을이 지는 바다 위를 날아가는 작은 종이비행기, 파스텔 톤, 감성적인 일러스트"></textarea>
+                            </div>
+
+                            <div class="field-row">
+                                <div class="field-label">키워드 (쉼표로 구분)</div>
+                                <input id="keywordInput" class="input"
+                                    placeholder="예) pastel, sunset, minimal, illustration" />
+
+                                <div class="chips" id="chipList">
+                                    <button type="button" class="chip">portrait</button>
+                                    <button type="button" class="chip">cinematic</button>
+                                    <button type="button" class="chip">3d render</button>
+                                    <button type="button" class="chip">flat illustration</button>
+                                    <button type="button" class="chip">vivid color</button>
+                                </div>
+                            </div>
+
+                            <div class="field-row">
+                                <div class="field-label">모드 선택</div>
+                                <div class="segment-wrap">
+                                    <button type="button" class="segment-btn active" data-mode="reference"
+                                        id="modeReferenceBtn">
+                                        <span class="segment-dot"></span>
+                                        레퍼런스 먼저 보기
+                                    </button>
+                                    <button type="button" class="segment-btn" data-mode="direct" id="modeDirectBtn">
+                                        바로 생성
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="panel-footer">
+                                <button type="button" class="btn btn-primary" id="searchRefBtn">
+                                    <span class="btn-icon"></span>
+                                    레퍼런스 검색
+                                </button>
+
+                                <button type="button" class="btn btn-outline" id="directGenerateBtn">
+                                    <span class="btn-icon"></span>
+                                    프롬프트로 바로 생성
+                                </button>
+
+                                <div class="hint-text">
+                                    * “레퍼런스 검색” 후 우측에서 원하는 이미지를 선택하고 생성할
+                                    수 있습니다.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 오른쪽: 레퍼런스 / 생성 결과 -->
+                        <div class="right-column">
+                            <!-- 레퍼런스 -->
+                            <div class="section-card">
+                                <div class="section-header">
+                                    <div class="section-title-box">
+                                        <div class="section-title">레퍼런스 결과</div>
+                                        <div class="section-sub">
+                                            프롬프트/키워드를 바탕으로 찾아온 이미지 레퍼런스예요.
+                                            최대 8개까지 선택 가능합니다.
+                                        </div>
+                                    </div>
+                                    <div class="badge-outline" id="refCountBadge">
+                                        <span class="badge-dot"></span>
+                                        선택된 레퍼런스 0개
+                                    </div>
+                                </div>
+
+                                <div id="refEmpty" class="empty-state">
+                                    아직 레퍼런스가 없어요. 왼쪽에서 프롬프트를 입력하고
+                                    <strong>“레퍼런스 검색”</strong>을 눌러주세요.
+                                </div>
+
+                                <div class="ref-grid" id="refGrid" hidden></div>
+                            </div>
+
+                            <!-- 생성된 이미지 -->
+                            <div class="section-card">
+                                <div class="section-header">
+                                    <div class="section-title-box">
+                                        <div class="section-title">생성된 이미지</div>
+                                        <div class="section-sub">
+                                            선택한 레퍼런스 또는 프롬프트만으로 생성된 결과입니다.
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="generateFromRefBtn">
+                                        <span class="btn-icon">⚡</span>
+                                        선택 레퍼런스로 생성
+                                    </button>
+                                </div>
+
+                                <div id="genEmpty" class="empty-state">
+                                    생성된 이미지가 없습니다. 레퍼런스를 선택해서
+                                    <strong>“선택 레퍼런스로 생성”</strong>하거나, 왼쪽에서
+                                    <strong>“프롬프트로 바로 생성”</strong>을 눌러보세요.
+                                </div>
+
+                                <div class="gen-grid" id="genGrid" hidden></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- 전역 supabase 클라이언트 생성 -->
+    <script src="js/common.js"></script>
+
+    <!-- 로그인 위젯 (authArea 관리) -->
+    <script src="js/authWidget.js"></script>
+    <script src="js/studio.js"></script>
+    <!-- IMA SDK for Rewarded Ads (web) -->
+    <script src="https://imasdk.googleapis.com/js/sdkloader/ima3.js"></script>
+    <!-- local helper that exposes window.loadWebRewardedAd -->
+    <script src="js/ima-rewarded.js"></script>
+    <script src="js/credits.js"></script>
+
+</body>
+<!-- 이미지 확대 모달 -->
+<div id="imageModal" class="image-modal hidden">
+    <div class="image-modal-inner">
+        <button id="imageModalClose" class="image-modal-close">✕</button>
+        <img id="imageModalImg" src="" alt="미리보기 이미지" />
+    </div>
+</div>
+
+</html>

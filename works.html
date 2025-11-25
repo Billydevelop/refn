@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>내 작업물 | REFN</title>
+  <link rel="stylesheet" href="./css/common.css" />
+  <link rel="stylesheet" href="./css/works.css" />
+</head>
+
+<body data-page="works">
+  <div class="app">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button class="back-btn" id="mobileNavBtn" aria-label="메뉴 열기">
+          ☰
+        </button>
+        <span class="top-title">내 작업물</span>
+      </div>
+    </header>
+
+    <div class="content">
+      <div id="sidebar-container"></div>
+      <div id="drawer-container"></div>
+
+      <main class="main-area works-main">
+        <section class="works-header">
+          <div class="works-title">전체 작업물</div>
+          <div class="works-sub">
+            레픈 스튜디오를 포함해 앞으로의 서비스에서 생성된 콘텐츠들을 한 곳에서 관리합니다.
+          </div>
+          <div class="works-filters">
+            <button class="works-filter-btn active" data-kind="all">전체</button>
+            <button class="works-filter-btn" data-kind="image">이미지</button>
+            <button class="works-filter-btn" data-kind="chat">채팅</button>
+          </div>
+
+          <section class="works-grid" id="worksGrid">
+            <!-- JS에서 카드 렌더링 -->
+          </section>
+        </section>
+
+        <div class="works-empty" id="worksEmpty" hidden>
+          아직 생성한 작업물이 없습니다.
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/common.js"></script>
+  <script src="js/authWidget.js"></script>
+  <script src="js/works.js"></script>
+</body>
+
+</html>

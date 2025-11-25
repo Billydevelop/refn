@@ -1,0 +1,71 @@
+<aside class="sidebar">
+    <div class="sidebar-top">
+        <!-- 홈 -->
+        <div class="side-item" data-page="home" onclick="location.href='index.html'">
+            <img src="./assets/sidebar-h.png" class="side-icon" />
+            <span class="side-text">Home</span>
+        </div>
+
+        <!-- 스튜디오 -->
+        <div class="side-item" data-page="studio" onclick="location.href='studio.html'">
+            <img src="./assets/sidebar-s.png" class="side-icon" />
+            <span class="side-text">Studio</span>
+        </div>
+
+        <!-- 메뉴 -->
+        <div class="side-item" data-page="menu" onclick="location.href='characters.html'">
+            <img src="./assets/sidebar-c.png" class="side-icon" />
+            <span class="side-text">characters</span>
+        </div>
+
+        <!-- 메뉴 -->
+        <div class="side-item" data-page="menu" onclick="location.href='menu.html'">
+            <img src="./assets/sidebar-m.png" class="side-icon" />
+            <span class="side-text">Ai Menu</span>
+        </div>
+
+
+        <!-- 생성 작업물 -->
+        <div class="side-item" data-page="works" onclick="location.href='works.html'">
+            <img src="./assets/sidebar-w.png" class="side-icon" />
+            <span class="side-text">Work</span>
+        </div>
+    </div>
+
+    <div class="sidebar-bottom">
+        <div class="credits" id="sidebarCredits">-</div>
+
+        <!-- 아바타 버튼 -->
+        <button class="avatar" id="sidebarAvatar">
+            <span id="sidebarAvatarText">로그인</span>
+        </button>
+
+        <!-- 🔹 계정 팝오버 -->
+        <div class="account-popover" id="accountPopover">
+            <div class="account-popover-header">
+                <div class="account-avatar-circle" id="accountAvatarCircle">희승</div>
+                <div class="account-popover-info">
+                    <div class="account-name" id="accountName">gmlthd94</div>
+                    <div class="account-credits">
+                        <span id="accountCredits">3,000</span> 크레딧
+                    </div>
+                </div>
+            </div>
+
+            <button class="account-item" data-account-link="credits">
+                <span class="account-item-icon"></span>
+                <span>크레딧 관리</span>
+            </button>
+
+            <button class="account-item" data-account-link="mypage">
+                <span class="account-item-icon"></span>
+                <span>마이페이지</span>
+            </button>
+
+            <button class="account-item account-logout" id="accountLogout">
+                <span class="account-item-icon"></span>
+                <span>로그아웃</span>
+            </button>
+        </div>
+    </div>
+</aside>

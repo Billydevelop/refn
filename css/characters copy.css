@@ -1,0 +1,494 @@
+/* 배경 */
+.page-characters {
+  background: #050608;
+  color: #f5f5f5;
+}
+
+/* 메인 래퍼 */
+.characters-main {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.characters-main__inner {
+  width: 100%;
+  max-width: 1180px;
+  margin: 16px auto 40px;
+  padding: 0 16px 40px;
+  box-sizing: border-box;
+}
+
+/* 카드 공통 */
+.card {
+  background: #15171c;
+  border-radius: 8px;
+  padding: 0;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+/* 칩 (상단 탭) */
+.chip {
+  border: none;
+  background: #1d1f25;
+  color: #c3c8d4;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.chip--primary {
+  background: #ff4343;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* 히어로 영역 */
+.characters-hero {
+  margin-bottom: 28px;
+}
+
+.characters-hero__tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+/* 스크롤바 최소화 */
+.characters-hero__tabs::-webkit-scrollbar {
+  height: 4px;
+}
+.characters-hero__tabs::-webkit-scrollbar-thumb {
+  background: #2b2e36;
+  border-radius: 999px;
+}
+
+.characters-hero__content {
+  display: grid;
+  grid-template-columns: 2fr 1.1fr;
+  gap: 16px;
+}
+
+/* 히어로 카드 공통 */
+.hero-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.hero-card__thumb {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card__thumb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* 진행 바 + 인덱스 (좌측 슬라이드 느낌) */
+.hero-card__progress {
+  position: absolute;
+  left: 12px;
+  top: 14px;
+  bottom: 14px;
+  width: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hero-card__progress-bar {
+  width: 100%;
+  height: 28%;
+  background: #ff6a6a;
+  border-radius: 999px;
+}
+
+.hero-card__index {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 10px;
+  color: #d7d9e0;
+}
+
+/* 히어로 본문 */
+.hero-card__body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hero-card__body--compact {
+  padding: 12px 14px 14px;
+}
+
+.hero-card__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: #ff4343;
+  color: #fff;
+  width: fit-content;
+}
+
+.hero-card__title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.hero-card__title--small {
+  font-size: 15px;
+}
+
+.hero-card__subtitle {
+  font-size: 13px;
+  color: #c3c8d4;
+}
+
+.hero-card__subtitle--small {
+  font-size: 12px;
+}
+
+.hero-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+/* 서브 히어로 세로 스택 */
+.hero-card-column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 리스트 섹션 */
+.characters-section {
+  margin-top: 4px;
+}
+
+.characters-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.characters-section__title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.characters-section__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 정렬 드롭다운 버튼 */
+.dropdown-button {
+  border-radius: 4px;
+  border: 1px solid #2b2e36;
+  background: #111219;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #c3c8d4;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.dropdown-button__icon {
+  font-size: 10px;
+}
+
+/* 필터 영역 (장르/태그/검색) */
+.characters-filters {
+  margin-bottom: 12px;
+}
+
+.characters-filters__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.field--inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.field__label {
+  font-size: 12px;
+  color: #9fa5b5;
+  white-space: nowrap;
+}
+
+.field__control {
+  width: 100%;
+  background: #050608;
+  border-radius: 4px;
+  border: 1px solid #2b2e36;
+  padding: 8px 10px;
+  color: #f5f5f5;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.field__control::placeholder {
+  color: #757b8a;
+}
+
+.characters-filters__search {
+  margin-top: 2px;
+}
+
+/* 캐릭터 카드 그리드 */
+.characters-grid {
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+/* 캐릭터 카드 */
+.character-card {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  overflow: hidden;
+  background: #15171c;
+  padding: 12px 12px 14px;
+  border-radius: 8px;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+    background 0.12s ease-out;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.character-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.55);
+  background: #191b22;
+}
+
+.character-card__thumb {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.character-card__thumb img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+/* 수익 쉐어 뱃지 */
+.character-card__badge {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #ffd966;
+}
+
+.character-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.character-card__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.character-card__name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.icon-button--like {
+  border: none;
+  background: transparent;
+  color: #f36e8b;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.character-card__summary {
+  font-size: 12px;
+  color: #c3c8d4;
+  line-height: 1.4;
+  max-height: 2.8em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.character-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 11px;
+  color: #8c93a4;
+}
+
+.character-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.character-card__tags .tag {
+  background: #20232b;
+  color: #c3c8d4;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+/* 태그 공통 (히어로/카드 둘 다 사용) */
+.tag {
+  background: #20232b;
+  color: #c3c8d4;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+/* 반응형 */
+@media (max-width: 960px) {
+  .characters-main__inner {
+    max-width: 100%;
+    padding: 0 12px 32px;
+  }
+
+  .characters-hero__content {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card-column {
+    flex-direction: row;
+  }
+
+  .hero-card-column .hero-card {
+    flex: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .characters-main__inner {
+    margin-top: 12px;
+    padding: 0 10px 28px;
+  }
+
+  .characters-hero__content {
+    gap: 12px;
+  }
+
+  .hero-card__title {
+    font-size: 18px;
+  }
+
+  .characters-filters__row {
+    flex-direction: column;
+  }
+
+  .characters-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .character-card {
+    padding: 10px 10px 12px;
+  }
+}
+
+
+/* 히어로 슬라이더 기본 레이아웃 */
+.hero-slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 18px;
+}
+
+.hero-slider__track {
+  display: flex;
+  transition: transform 0.45s ease;
+  will-change: transform;
+}
+
+.hero-slide {
+  min-width: 100%;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* 슬라이드 이미지 */
+.hero-slide .hero-card__thumb img {
+  width: 100%;
+  height: 360px;
+  object-fit: cover;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* 네비게이션 버튼 */
+.hero-slider__btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.45);
+  border: none;
+  color: #fff;
+  font-size: 26px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.hero-slider__btn--prev { left: 10px; }
+.hero-slider__btn--next { right: 10px; }
+
+.hero-slider__btn:hover {
+  background: rgba(0,0,0,0.7);
+}
+
+/* 모바일 최적화 */
+@media (max-width: 640px) {
+  .hero-slide .hero-card__thumb img {
+    height: 280px;
+  }
+
+  .hero-card__title { font-size: 18px; }
+  .hero-card__subtitle { font-size: 12px; }
+}

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>캐릭터 목록 | 레픈</title>
+  <link rel="stylesheet" href="./css/common.css">
+  <link rel="stylesheet" href="./css/index.css">
+  <link rel="stylesheet" href="./css/characters copy.css">
+</head>
+
+<body data-page="characters" class="page page-characters">
+  <div class="app">
+    <!-- 상단 헤더: 공통 -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button class="back-btn" id="mobileNavBtn" aria-label="메뉴 열기">
+          ☰
+        </button>
+        <span class="top-title">캐릭터</span>
+      </div>
+      <div class="top-bar-right">
+        <a href="/create-character.html" class="top-add">
+          + 캐릭터 만들기
+        </a>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- 공통 사이드바 / 드로어 -->
+      <div id="sidebar-container"></div>
+      <div id="drawer-container"></div>
+
+      <!-- 메인 영역 -->
+      <main class="main-area page-main characters-main">
+        <div class="characters-main__inner">
+
+          <!-- 상단 탭 + 히어로 영역 -->
+<section class="characters-hero">
+  <!-- 상단 카테고리 탭 -->
+  <div class="characters-hero__tabs">
+    <button class="chip chip--primary">추천</button>
+    <button class="chip">신작 랭킹</button>
+    <button class="chip">남성 인기</button>
+    <button class="chip">여성 인기</button>
+    <button class="chip">2차 창작</button>
+  </div>
+
+  <!-- 히어로 슬라이더 -->
+  <div class="hero-slider">
+    <div class="hero-slider__track">
+
+      <!-- 슬라이드 1 -->
+      <article class="hero-slide card">
+        <div class="hero-card__thumb">
+          <img src="/assets/sample-character-01.png" alt="추천 캐릭터" />
+        </div>
+        <div class="hero-card__body">
+          <span class="hero-card__badge">캐릭터 추천</span>
+          <h1 class="hero-card__title">강시온</h1>
+          <p class="hero-card__subtitle">
+            피 안 섞인 여동생에게 집착하는 F1 드라이버
+          </p>
+          <div class="hero-card__tags">
+            <span class="tag">#감정선</span>
+            <span class="tag">#다정</span>
+            <span class="tag">#순애</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- 슬라이드 2 -->
+      <article class="hero-slide card">
+        <div class="hero-card__thumb">
+          <img src="/assets/sample-character-02.png" alt="서브 캐릭터 1" />
+        </div>
+        <div class="hero-card__body">
+          <h2 class="hero-card__title hero-card__title--small">새벽 피시방 알바누나</h2>
+          <p class="hero-card__subtitle hero-card__subtitle--small">
+            새벽마다 PC방을 지키는 무심하고 예쁜 알바 누나
+          </p>
+        </div>
+      </article>
+
+      <!-- 슬라이드 3 -->
+      <article class="hero-slide card">
+        <div class="hero-card__thumb">
+          <img src="/assets/sample-character-03.png" alt="서브 캐릭터 2" />
+        </div>
+        <div class="hero-card__body">
+          <h2 class="hero-card__title hero-card__title--small">이번 쌤 바보</h2>
+          <p class="hero-card__subtitle hero-card__subtitle--small">
+            오늘도 반 아이들에게 휘둘리는 담임쌤
+          </p>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- 네비 버튼 -->
+    <button class="hero-slider__btn hero-slider__btn--prev">‹</button>
+    <button class="hero-slider__btn hero-slider__btn--next">›</button>
+  </div>
+</section>
+
+          <!-- 캐릭터 리스트 섹션 -->
+          <section class="characters-section">
+            <header class="characters-section__header">
+              <h2 class="characters-section__title">캐릭터 모아보기</h2>
+              <div class="characters-section__controls">
+                <button class="dropdown-button">
+                  대화 많아 나는 순
+                  <span class="dropdown-button__icon">▾</span>
+                </button>
+              </div>
+            </header>
+
+            <!-- 필터줄 (장르/태그 검색) -->
+            <div class="characters-filters">
+              <div class="characters-filters__row">
+                <div class="field field--inline">
+                  <label class="field__label">장르</label>
+                  <select class="field__control">
+                    <option value="">전체</option>
+                    <option>로맨스</option>
+                    <option>일상</option>
+                    <option>판타지</option>
+                    <option>게임/버튜버</option>
+                  </select>
+                </div>
+                <div class="field field--inline">
+                  <label class="field__label">태그</label>
+                  <select class="field__control">
+                    <option value="">전체</option>
+                    <option>연애/친구</option>
+                    <option>상담/힐링</option>
+                    <option>버츄얼 스트리머</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="characters-filters__search">
+                <input
+                  type="text"
+                  class="field__control"
+                  placeholder="캐릭터 이름, 태그 검색"
+                />
+              </div>
+            </div>
+
+            <!-- 실제 Supabase 캐릭터 카드 그리드 (JS로 렌더링) -->
+            <div class="characters-grid">
+              <!-- JS에서 채워짐 -->
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- 전역 supabase 클라이언트 생성 -->
+  <script src="js/common.js"></script>
+  <!-- 로그인 위젯 -->
+  <script src="js/authWidget.js"></script>
+  <script src="js/characters copy.js"></script>
+</body>
+</html>

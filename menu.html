@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>REFN! 메뉴</title>
+    <link rel="stylesheet" href="./css/common.css" />
+    <link rel="stylesheet" href="./css/menu.css" />
+</head>
+
+<body data-page="menu">
+    <div class="app">
+        <!-- 상단 헤더 -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="back-btn" id="mobileNavBtn" aria-label="메뉴 열기">
+                    ☰
+                </button>
+                <span class="top-title">메뉴</span>
+                <span class="top-add">+</span>
+            </div>
+
+
+        </header>
+
+        <div class="content">
+            <!-- 사이드바 (index랑 동일 구조) -->
+            <div id="sidebar-container"></div>
+
+
+            <!-- (드로어 사용한다면 필요 시 추가)
+        <button class="drawer-toggle" id="drawerOpenBtn" type="button">❮</button>
+        <section class="drawer drawer-hidden" id="globalDrawer"> ... </section>
+        -->
+            <!-- 🔹 전역 드로어 -->
+            <div id="drawer-container"></div>
+
+            <!-- 메인 -->
+            <main class="main-area">
+                <div class="menu-wrapper">
+                    <!-- 상단 브랜드 영역 -->
+                    <section class="menu-hero">
+                        <img src="./assets/refn-logo1.png" alt="REFN 로고" class="menu-hero-logo" />
+                        <div class="menu-hero-title">여러 기능을 한 곳에서, 레픈 메뉴</div>
+                        <div class="menu-hero-sub">
+                            내가 만든 미니 서비스들을 한 번에 모아두고 빠르게 이동해보세요.
+                        </div>
+                    </section>
+
+                    <!-- 섹션들이 js로 들어갈 자리 -->
+                    <section id="menuSections" class="menu-sections"></section>
+                </div>
+            </main>
+        </div>
+    </div>
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- 전역 supabase 클라이언트 생성 -->
+    <script src="js/common.js"></script>
+
+    <!-- 로그인 위젯 (authArea 관리) -->
+    <script src="js/authWidget.js"></script>
+    <script src="./js/menu.js"></script>
+</body>
+
+</html>

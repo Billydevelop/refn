@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>마이페이지 | REFN</title>
+  <link rel="stylesheet" href="./css/common.css" />
+  <link rel="stylesheet" href="./css/mypage.css" />
+</head>
+
+<body data-page="mypage">
+  <div class="app">
+    <!-- 상단 헤더 -->
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button class="back-btn" id="mobileNavBtn" aria-label="메뉴 열기">
+          ☰
+        </button>
+        <span class="top-title">마이페이지</span>
+        <span class="top-add">+</span>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- 좌측 사이드바 -->
+      <div id="sidebar-container"></div>
+
+      <!-- 전역 드로어 -->
+      <div id="drawer-container"></div>
+
+      <!-- 메인 -->
+      <main class="main-area mypage-main">
+        <section class="profile-card" id="profileCard">
+          <!-- 상단 프로필 헤더 -->
+          <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatarCircle">희승</div>
+            <div class="profile-name-wrap">
+              <div class="profile-display-name" id="profileDisplayName">엄희송</div>
+              <div class="profile-handle" id="profileHandle">@gmhthd94</div>
+            </div>
+          </div>
+
+          <!-- 계정 정보 섹션 -->
+          <div class="profile-section">
+            <div class="profile-section-title">계정 정보</div>
+            <div class="profile-row">
+              <div class="profile-row-label">가입일</div>
+              <div class="profile-row-value" id="profileJoinedAt">-</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-row-label">닉네임</div>
+              <div class="profile-row-value" id="profileNickname">-</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-row-label">현재 플랜</div>
+              <div class="profile-row-value" id="profilePlan">무료</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-row-label">크레딧</div>
+              <div class="profile-row-value">
+                <span id="profileCredits">0</span>
+              </div>
+            </div>
+
+            <div class="profile-row profile-row-inline">
+              <input
+                type="text"
+                class="profile-input"
+                disabled
+                value="추가 크레딧이 필요하신가요?"
+              />
+              <button class="profile-small-btn" id="buyCreditsBtn">
+                + 크레딧 구매하기
+              </button>
+            </div>
+          </div>
+
+          <!-- 추가 프로필 정보 섹션 -->
+          <div class="profile-section">
+            <div class="profile-section-title">추가 프로필 정보</div>
+
+            <div class="profile-row">
+              <div class="profile-row-label">자기소개</div>
+              <div class="profile-row-value" id="profileBio">정보 없음</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-row-label">웹사이트</div>
+              <div class="profile-row-value" id="profileWebsite">정보 없음</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-row-label">직업</div>
+              <div class="profile-row-value" id="profileJob">정보 없음</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-row-label">성별</div>
+              <div class="profile-row-value" id="profileGender">정보 없음</div>
+            </div>
+            <div class="profile-row">
+              <div class="profile-row-label">연령대</div>
+              <div class="profile-row-value" id="profileAgeRange">정보 없음</div>
+            </div>
+          </div>
+
+          <!-- 버튼 영역 -->
+          <div class="profile-actions">
+            <button class="profile-edit-btn" id="editProfileBtn">
+              ✏ 프로필 수정하기 (준비 중)
+            </button>
+            <button class="profile-logout-btn" id="profileLogoutBtn">
+              로그아웃
+            </button>
+          </div>
+
+          <!-- 위험 구역 -->
+          <div class="profile-danger">
+            <div class="profile-danger-title">위험 구역</div>
+            <p class="profile-danger-desc">
+              다음 작업은 되돌릴 수 없습니다. 신중하게 진행해주세요.
+            </p>
+            <button class="profile-delete-btn" id="profileDeleteBtn">
+              계정 영구 삭제 (서버 구현 필요)
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Supabase + 공통 스크립트 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/common.js"></script>
+  <script src="js/authWidget.js"></script>
+  <script src="js/mypage.js"></script>
+</body>
+</html>
