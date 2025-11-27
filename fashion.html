@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>패션 교체 | REFN</title>
+  <link rel="stylesheet" href="./css/common.css">
+  <link rel="stylesheet" href="./css/fashion.css">
+</head>
+
+<body data-page="fashion" class="page page-fashion">
+  <div class="app">
+    <header class="top-bar">
+      <div class="top-bar-left">
+        <button class="back-btn" id="mobileNavBtn" aria-label="메뉴 열기">&#9776;</button>
+        <span class="top-title">패션 교체 (Seedream 4.0)</span>
+      </div>
+    </header>
+
+    <div class="content">
+      <div id="sidebar-container"></div>
+      <div id="drawer-container"></div>
+
+      <main class="main-area">
+        <div class="fashion-wrapper simple">
+          <section class="fashion-intro">
+            <div>
+              <div class="intro-title">Seedream 4.0 · 포즈/얼굴/배경 고정 + 의상만 교체</div>
+              <p class="intro-desc">
+                1) 원본 인물 업로드 → 2) 프롬프트 또는 레퍼런스 의상 업로드 → 3) 생성 클릭.
+                “Replace the outfits…” 기본 프롬프트에 추가 설명을 적으면 반영됩니다.
+              </p>
+            </div>
+            <div class="intro-chips">
+              <span class="chip">포즈·얼굴·배경 유지</span>
+              <span class="chip">Seedream 4.0</span>
+              <span class="chip">프롬프트 + 참조 의상</span>
+            </div>
+          </section>
+
+          <div class="simple-grid">
+            <section class="fashion-panel project-panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">입력</div>
+                  <p class="panel-desc">원본 한 장 = 하나의 결과. 옵션으로 레퍼런스 의상 이미지나 추가 프롬프트를 넣으세요.</p>
+                </div>
+              </div>
+
+              <div class="field-block">
+                <label class="field-label">원본(의상 교체 대상)</label>
+                <div class="upload-box">
+                  <input type="file" id="baseUpload" accept="image/*" />
+                  <div class="upload-cta">
+                    <div class="upload-title">PNG/JPG/WebP 업로드</div>
+                    <div class="upload-sub">포즈/얼굴/배경을 그대로 유지합니다.</div>
+                  </div>
+                </div>
+                <img id="basePreview" class="mini-preview" alt="원본 미리보기" />
+              </div>
+
+              <div class="field-block">
+                <label class="field-label">레퍼런스 의상 (선택)</label>
+                <div class="upload-box">
+                  <input type="file" id="refUpload" accept="image/*" />
+                  <div class="upload-cta">
+                    <div class="upload-title">참조 의상 이미지 업로드</div>
+                    <div class="upload-sub">미입력 시 프롬프트만으로 생성합니다.</div>
+                  </div>
+                </div>
+                <img id="refPreview" class="mini-preview" alt="레퍼런스 미리보기" />
+              </div>
+
+              <div class="field-block">
+                <label class="field-label" for="promptInput">추가 프롬프트</label>
+                <textarea id="promptInput" class="text-area" rows="4"
+                  placeholder="예) black leather jacket with silver zippers, straight jeans, minimal look"></textarea>
+              </div>
+
+              <div class="form-actions simple-actions">
+                <button class="f-btn f-btn-ghost" id="resetBtn" type="button">초기화</button>
+                <button class="f-btn f-btn-primary" id="generateBtn" type="button">의상 교체 생성</button>
+              </div>
+            </section>
+
+            <section class="fashion-panel preview-panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-title">결과</div>
+                  <p class="panel-desc">Seedream 4.0 결과가 여기에 표시됩니다.</p>
+                </div>
+              </div>
+              <div class="result-stage">
+                <img id="resultPreview" alt="생성 결과" />
+              </div>
+              <div class="status-bar" id="statusBar">원본을 업로드하고 생성 버튼을 눌러주세요.</div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/common.js"></script>
+  <script src="js/authWidget.js"></script>
+  <script src="js/fashion.js"></script>
+</body>
+
+</html>

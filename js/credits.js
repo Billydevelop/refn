@@ -19,8 +19,20 @@ async function buildAuthHeaders() {
 async function loadCreditConfig() {
   try {
     const res = await fetch('/api/credit-config');
-    const json = await res.json();
-    if (!json.success) return;
+    if (!res.ok) {
+      console.warn('loadCreditConfig skipped, status', res.status);
+      return;
+    }
+
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      console.warn('loadCreditConfig response is not JSON');
+      return;
+    }
+
+    const json = await res.json().catch(() => null);
+    if (!json || !json.success) return;
+
     creditConfig = json;
     renderCreditUpsell();
   } catch (e) {
@@ -161,11 +173,20 @@ function setupPaddleInstance(paddle, options = {}) {
     }
   }
 
-  if (clientToken && paddleSetupToken !== clientToken && typeof paddle.Setup === 'function') {
+  // New Paddle Billing SDK (v2) uses Initialize; classic SDK uses Setup.
+  if (clientToken && paddleSetupToken !== clientToken) {
     try {
-      const setupParams = { token: clientToken };
-      if (sellerId) setupParams.seller = sellerId;
-      paddle.Setup(setupParams);
+      if (typeof paddle.Initialize === 'function') {
+        // Billing v2 token flow must not include seller alongside token
+        const initParams = { token: clientToken };
+        paddle.Initialize(initParams);
+      } else if (typeof paddle.Setup === 'function') {
+        const setupParams = { token: clientToken };
+        if (sellerId) setupParams.seller = sellerId;
+        paddle.Setup(setupParams);
+      } else {
+        console.warn('Paddle SDK does not expose Initialize/Setup for token flow');
+      }
       paddleSetupToken = clientToken;
       paddleSetupVendor = null;
     } catch (e) {

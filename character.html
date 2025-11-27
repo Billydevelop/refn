@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="./css/common.css">
   <link rel="stylesheet" href="./css/index.css">
   <link rel="stylesheet" href="./css/character.css">
-
 </head>
 
 <body data-page="character" class="page page-character">
@@ -36,149 +35,190 @@
       <main class="main-area page-main">
         <div class="character-layout">
           <!-- 좌측: 채팅 영역 -->
-          <section class="character-chat card">
-            <!-- 캐릭터 헤더 -->
-            <header class="character-chat__header">
-              <div class="character-chat__info">
-                <div class="character-chat__avatar">
-                  <img src="/assets/img/sample-character-01.png" alt="캐릭터 이름" />
+          <section class="character-chat">
+            <!-- 캐릭터 프로필 헤더 -->
+            <div class="character-profile-header">
+              <div class="character-profile-main">
+                <div class="character-avatar-wrapper">
+                  <img src="/assets/img/sample-character-01.png" alt="캐릭터" class="character-avatar" />
+                  <span class="character-status-dot"></span>
                 </div>
-                <div>
-                  <div class="character-chat__name-row">
-                    <h1 class="character-chat__name">서은빈</h1>
+                <div class="character-info">
+                  <div class="character-name-row">
+                    <h1 class="character-name">서은빈</h1>
                     <span class="badge badge--share">수익 쉐어</span>
                   </div>
-                  <div class="character-chat__meta">
-                    <span>👍 1.6K</span>
-                    <span>💬 100</span>
-                    <span>👀 20.2K</span>
+                  <p class="character-tagline">게임까지 이사한 이 셀카를 잘못 보낸 것 같다</p>
+                  <div class="character-stats">
+                    <span class="stat-item">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                      </svg>
+                      <span>1.6K</span>
+                    </span>
+                    <span class="stat-item">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                      </svg>
+                      <span>100</span>
+                    </span>
+                    <span class="stat-item">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <span>20.2K</span>
+                    </span>
                   </div>
-                  <p class="character-chat__summary">
-                    게시까지 이사한이 셀카를 잘못 보낸 것 같다
-                  </p>
                 </div>
               </div>
-              <div class="character-chat__actions">
-                <button class="btn btn--ghost btn--small">팔로우</button>
-                <button class="btn btn--primary btn--small">좋아요</button>
-                <button class="side-toggle-btn" id="sideToggleBtn" title="패널 열기">◀</button>
-              </div>
-            </header>
-
-            <!-- 실제 채팅 메시지 영역 -->
-            <div class="chat-window" id="chatWindow">
-              <!-- 예시 메시지 -->
-              <div class="chat-message chat-message--character">
-                <div class="chat-message__avatar">
-                  <img src="/assets/img/sample-character-01.png" alt="캐릭터" />
-                </div>
-                <div class="chat-message__bubble">
-                  <div class="chat-message__name">서은빈</div>
-                  <div class="chat-message__text">
-                    하단의 입력창에서 말을 걸어줘! 오늘은 뭐 하고 있었어?
-                  </div>
-                  <div class="chat-message__meta">방금 전</div>
-                </div>
-              </div>
-
-              <div class="chat-message chat-message--user">
-                <div class="chat-message__bubble">
-                  <div class="chat-message__name">나</div>
-                  <div class="chat-message__text">
-                    그냥 유튜브 보면서 쉬고 있었어 ㅎㅎ
-                  </div>
-                  <div class="chat-message__meta">방금 전</div>
-                </div>
+              <div class="character-actions">
+                <button class="btn-icon btn-favorite" title="좋아요">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </button>
+                <button class="btn-icon btn-info-toggle" id="sideToggleBtn" title="상세정보">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                </button>
               </div>
             </div>
 
-            <!-- 입력 영역 -->
-            <form class="chat-input" id="chatForm">
-              <button type="button" class="chat-input__icon-button" title="음성 입력">
-                🎙
-              </button>
-              <textarea class="chat-input__textarea" placeholder="메시지를 입력하거나 마이크 아이콘으로 말해보세요"></textarea>
-              <button type="submit" class="btn btn--primary chat-input__send">
-                전송
-              </button>
+            <!-- 채팅 메시지 영역 -->
+            <div class="chat-messages-container">
+              <div class="chat-window" id="chatWindow">
+                <!-- 채팅 메시지들이 여기에 동적으로 추가됩니다 -->
+              </div>
+            </div>
+
+            <!-- 채팅 입력 영역 -->
+            <form class="chat-input-wrapper" id="chatForm">
+              <div class="chat-input-container">
+                <button type="button" class="chat-input-icon" title="음성 입력">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                  </svg>
+                </button>
+                <textarea 
+                  class="chat-input-field" 
+                  placeholder="메시지를 입력하세요..."
+                  rows="1"
+                ></textarea>
+                <button type="submit" class="chat-input-send">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </div>
             </form>
           </section>
 
-          
+          <!-- 우측: 캐릭터 상세정보 패널 -->
+          <aside class="character-side character-side--collapsed">
+            <div class="character-side-content">
+              <div class="character-side-header">
+                <h2 class="character-side-title">캐릭터 정보</h2>
+                <button class="btn-close-side" id="closeSideBtn">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
 
-          <!-- 우측: 캐릭터 정보 / 설정 패널 -->
-          <aside class="character-side">
-            <div class="card character-side__card">
-              <div class="tabs tabs--underline">
-                <button class="tab tab--active" data-panel="profilePanel">상세 정보</button>
-                <button class="tab" data-panel="guidePanel">플레이 가이드</button>
-                <button class="tab" data-panel="creatorPanel">크리에이터</button>
+              <div class="character-side-tabs">
+                <button class="side-tab side-tab--active" data-panel="profilePanel">상세 정보</button>
+                <button class="side-tab" data-panel="guidePanel">플레이 가이드</button>
+                <button class="side-tab" data-panel="creatorPanel">크리에이터</button>
               </div>
 
               <!-- 상세 정보 패널 -->
-              <div class="panel panel--active" id="profilePanel">
-                <h2 class="panel__title">캐릭터 설명</h2>
-                <p class="panel__text">
-                  캐릭터의 성격이나 사사, 과거 사건 등 상세한 내용을 작성해 주세요.
-                </p>
+              <div class="side-panel side-panel--active" id="profilePanel">
+                <div class="panel-section">
+                  <h3 class="panel-section-title">캐릭터 설명</h3>
+                  <p class="panel-section-text">
+                    캐릭터의 성격이나 배경, 과거 사건 등 상세한 내용이 표시됩니다.
+                  </p>
+                </div>
 
-                <dl class="detail-list">
-                  <div class="detail-list__row">
-                    <dt>장르</dt>
-                    <dd>일상, 로맨스</dd>
+                <div class="panel-section">
+                  <div class="info-grid">
+                    <div class="info-item">
+                      <span class="info-label">장르</span>
+                      <span class="info-value">일상, 로맨스</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">타겟</span>
+                      <span class="info-value">연애/친구</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">해시태그</span>
+                      <span class="info-value">#여사친 #공부 #대학</span>
+                    </div>
                   </div>
-                  <div class="detail-list__row">
-                    <dt>태깃</dt>
-                    <dd>연애/친구</dd>
-                  </div>
-                  <div class="detail-list__row">
-                    <dt>해시태그</dt>
-                    <dd>#여사친 #공부 #대학</dd>
-                  </div>
-                </dl>
+                </div>
 
-                <h3 class="panel__subtitle">음성</h3>
-                <div class="voice-preview">
-                  <button class="btn btn--ghost btn--small">샘플 듣기 ▶</button>
-                  <span class="voice-preview__label">방송 자료 기반 보이스</span>
+                <div class="panel-section">
+                  <h3 class="panel-section-title">음성</h3>
+                  <div class="voice-preview">
+                    <button class="btn-voice-play">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                      </svg>
+                      샘플 듣기
+                    </button>
+                    <span class="voice-label">방송 자료 기반 보이스</span>
+                  </div>
                 </div>
               </div>
 
               <!-- 플레이 가이드 패널 -->
-              <div class="panel" id="guidePanel">
-                <h2 class="panel__title">플레이 가이드</h2>
-                <p class="panel__text">
-                  이 캐릭터는 일상 대화와 연애 상담에 최적화되어 있어요.
-                  과한 폭력/수위 있는 요청에는 응답하지 않아요.
-                </p>
+              <div class="side-panel" id="guidePanel">
+                <div class="panel-section">
+                  <h3 class="panel-section-title">플레이 가이드</h3>
+                  <p class="panel-section-text">
+                    이 캐릭터는 일상 대화와 연애 상담에 최적화되어 있어요.
+                    과한 폭력/수위 있는 요청에는 응답하지 않아요.
+                  </p>
+                </div>
               </div>
 
               <!-- 크리에이터 패널 -->
-              <div class="panel" id="creatorPanel">
-                <h2 class="panel__title">크리에이터 & 수익 쉐어</h2>
-                <div class="creator-info">
-                  <div class="creator-info__row">
-                    <span class="creator-info__label">캐릭터 제작자</span>
-                    <span class="creator-info__value">@고요한판다84497</span>
-                  </div>
-                  <div class="creator-info__row">
-                    <span class="creator-info__label">수익 쉐어</span>
-                    <span class="creator-info__value">50% (플랫폼) / 50% (크리에이터)</span>
+              <div class="side-panel" id="creatorPanel">
+                <div class="panel-section">
+                  <h3 class="panel-section-title">크리에이터 & 수익 쉐어</h3>
+                  <div class="creator-info">
+                    <div class="creator-item">
+                      <span class="creator-label">캐릭터 제작자</span>
+                      <span class="creator-value">@고요한판다84497</span>
+                    </div>
+                    <div class="creator-item">
+                      <span class="creator-label">수익 쉐어</span>
+                      <span class="creator-value">50% (플랫폼) / 50% (크리에이터)</span>
+                    </div>
                   </div>
                 </div>
 
-                <div class="creator-actions">
-                  <button class="btn btn--ghost btn--full">
+                <div class="panel-section">
+                  <button class="btn-panel-action">
                     이 캐릭터로 방송하기 가이드 보기
                   </button>
-                  <button class="btn btn--ghost btn--full">
+                  <button class="btn-panel-action">
                     내 방송 자료 업로드하고 말투 맞춤화
                   </button>
                 </div>
 
                 <!-- 내가 만든 캐릭터일 때만 노출 -->
-                <div class="creator-actions creator-actions--owner">
-                  <a href="/create-character.html?id=123" class="btn btn--primary btn--full">
+                <div class="panel-section creator-owner-section" style="display: none;">
+                  <a href="/create-character.html?id=123" class="btn-panel-primary">
                     캐릭터 설정 수정하기
                   </a>
                 </div>

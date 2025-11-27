@@ -1,11 +1,11 @@
-
+﻿
 
 // server.js
 import express from "express";
 import fs from 'fs';
 import https from 'https';
 import crypto from 'crypto';
-import fetch from "node-fetch";
+import fetch, { FormData } from "node-fetch";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -13,7 +13,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// .env 강제 로딩
+// .env 媛뺤젣 濡쒕뵫
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 console.log("DEBUG FIXED PATH:", path.join(__dirname, ".env"));
@@ -32,8 +32,32 @@ const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const OPENAI_IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL || "gpt-image-1";
+const OPENAI_ANALYZE_MODEL = process.env.OPENAI_ANALYZE_MODEL || "gpt-4o-mini";
+const STABILITY_API_KEY = process.env.STABILITY_API_KEY || null;
+const FASHION_CREDIT_COST = parseInt(process.env.FASHION_CREDIT_COST, 10) || 20;
+// Valid enum values: normal, event, bonus, refund
+function safeCategory(value, fallback = "normal") {
+  const allowed = ["normal", "event", "bonus", "refund"];
+  if (!value) return fallback;
+  const str = String(value).trim().toLowerCase();
+  if (allowed.includes(str)) return str;
+  return fallback;
+}
+const CREDIT_CATEGORY_CHAT = safeCategory(process.env.CREDIT_CATEGORY_CHAT);
+const CREDIT_CATEGORY_FASHION = safeCategory(process.env.CREDIT_CATEGORY_FASHION);
+// Valid tx_type enum: charge, usage, reset, adjustment
+function safeTxType(value, fallback = "usage") {
+  const allowed = ["charge", "usage", "reset", "adjustment"];
+  if (!value) return fallback;
+  const str = String(value).trim().toLowerCase();
+  if (allowed.includes(str)) return str;
+  return fallback;
+}
+const CREDIT_TX_TYPE_SPEND = safeTxType(process.env.CREDIT_TX_TYPE_SPEND);
 
-// ==== 클라이언트 생성 ====
+// ==== ?대씪?댁뼵???앹꽦 ====
 const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
@@ -42,16 +66,25 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: false },
 });
 
-app.use(express.json());
+// Admin client (bypasses RLS for internal credit operations)
+const supabaseAdmin = SUPABASE_SERVICE_ROLE_KEY
+  ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    })
+  : null;
 
-// 정적 파일 서빙 (index.html, studio.html 등)
+// Increase body size limit to handle data URLs for analysis
+app.use(express.json({ limit: "25mb" }));
+app.use(express.urlencoded({ extended: true, limit: "25mb" }));
+
+// ?뺤쟻 ?뚯씪 ?쒕튃 (index.html, studio.html ??
 app.use(express.static("."));
 
 /**
- * 공용: 에러 응답 헬퍼
+ * 怨듭슜: ?먮윭 ?묐떟 ?ы띁
  */
 function sendError(res, status, message, extra = {}) {
-  console.error("❌", message, extra);
+  console.error("ERROR", message, extra);
   return res.status(status).json({
     ok: false,
     message,
@@ -59,18 +92,50 @@ function sendError(res, status, message, extra = {}) {
   });
 }
 
+function clampSizeToOpenAI(size) {
+  // gpt-image-1 supports 1024/512/256 square; pick the nearest lower size to reduce egress.
+  const maxSide = Math.max(size?.width || 1024, size?.height || 1024);
+  if (maxSide <= 256) return "256x256";
+  if (maxSide <= 512) return "512x512";
+  return "1024x1024";
+}
+
+function makeBBoxPrompt(bbox) {
+  if (!bbox) return "";
+  const { x = 0, y = 0, w = 1, h = 1 } = bbox;
+  return `Place the garment inside the normalized bbox: x=${x.toFixed(
+    3
+  )}, y=${y.toFixed(3)}, w=${w.toFixed(3)}, h=${h.toFixed(
+    3
+  )} of the full canvas. Keep everything outside fully transparent.`;
+}
+
+function dataUrlToBuffer(dataUrl) {
+  const matches = dataUrl.match(/^data:(.+);base64,(.+)$/);
+  if (!matches) {
+    throw new Error("Invalid data URL");
+  }
+  return {
+    buffer: Buffer.from(matches[2], "base64"),
+    contentType: matches[1],
+  };
+}
+
 /**
- * 공용: 요청에서 현재 유저 정보 가져오기
+ * 怨듭슜: ?붿껌?먯꽌 ?꾩옱 ?좎? ?뺣낫 媛?몄삤湲?
  *
- * - 일반적인 방식:
- *   프론트에서 Supabase access_token을
- *   Authorization: Bearer <token> 으로 보내준다.
+ * - ?쇰컲?곸씤 諛⑹떇:
+ *   ?꾨줎?몄뿉??Supabase access_token??
+ *   Authorization: Bearer <token> ?쇰줈 蹂대궡以??
  *
  *   const { data: { session } } = await sb.auth.getSession();
  *   fetch("/api/...", {
  *     headers: { Authorization: `Bearer ${session.access_token}` }
  *   })
  */
+const authCache = new Map(); // token -> { user, expiresAt }
+const AUTH_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 async function getUserFromRequest(req) {
   const authHeader = req.headers["authorization"];
   if (!authHeader) return null;
@@ -78,14 +143,22 @@ async function getUserFromRequest(req) {
   const [type, token] = authHeader.split(" ");
   if (type !== "Bearer" || !token) return null;
 
+  const cached = authCache.get(token);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.user;
+  }
+
   const { data, error } = await supabase.auth.getUser(token);
   if (error || !data?.user) return null;
+
+  const expiresAt = Date.now() + AUTH_CACHE_TTL_MS;
+  authCache.set(token, { user: data.user, expiresAt });
 
   return data.user; // { id, email, ... }
 }
 
 // ===============================
-// 기존 기능 1: 레퍼런스 검색 API
+// 湲곗〈 湲곕뒫 1: ?덊띁?곗뒪 寃??API
 // POST /api/search-images
 // ===============================
 app.post("/api/search-images", async (req, res) => {
@@ -117,7 +190,7 @@ app.post("/api/search-images", async (req, res) => {
       thumbUrl: item.urls.small,
       fullUrl: item.urls.full,
       tags: (item.tags || []).map((t) => t.title),
-      source: `Unsplash · ${item.user.name}`,
+      source: `Unsplash 쨌 ${item.user.name}`,
     }));
 
     res.json(results);
@@ -128,7 +201,213 @@ app.post("/api/search-images", async (req, res) => {
 });
 
 // ===============================
-// 기존 기능 2: 이미지 생성 API
+// 패션: 의상 교체 (OpenAI 이미지)
+// POST /api/fashion/replace-outfit
+// ===============================
+app.post("/api/fashion/replace-outfit", async (req, res) => {
+  try {
+    const { baseImage, refImage, maskImage, prompt } = req.body || {};
+    if (!baseImage) return sendError(res, 400, "baseImage is required");
+
+    // Require login and credit check
+    const user = await getUserFromRequest(req);
+    if (!user) return sendError(res, 401, "unauthorized");
+
+    const creditDb = supabaseAdmin || supabase;
+
+    const { data: wallet, error: walletErr } = await creditDb
+      .from("credit_wallets")
+      .select("balance, lifetime_used")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (walletErr) {
+      console.error("fashion wallet error", walletErr);
+      return sendError(res, 500, "wallet_error", { error: walletErr.message });
+    }
+
+    const currentBalance = wallet?.balance ?? 0;
+    if (currentBalance < FASHION_CREDIT_COST) {
+      return sendError(res, 402, "insufficient_credits", {
+        required: FASHION_CREDIT_COST,
+        balance: currentBalance,
+      });
+    }
+
+    async function chargeAndRespond(payload) {
+      const newBalance = currentBalance - FASHION_CREDIT_COST;
+      const { error: txError } = await creditDb.from("credit_transactions").insert({
+        user_id: user.id,
+        subscription_id: null,
+        tx_type: CREDIT_TX_TYPE_SPEND,
+        category: CREDIT_CATEGORY_FASHION,
+        service_code: "FASHION",
+        amount: -FASHION_CREDIT_COST,
+        balance_after: newBalance,
+        description: "fashion replace-outfit",
+        metadata: { model: payload.model },
+      });
+      if (txError) {
+        console.error("fashion tx error", txError);
+        return sendError(res, 500, "tx_error", { error: txError.message });
+      }
+
+      const { error: walletUpdateErr } = await supabase.from("credit_wallets").upsert({
+        user_id: user.id,
+        balance: newBalance,
+        lifetime_used: (wallet?.lifetime_used ?? 0) + FASHION_CREDIT_COST,
+        updated_at: new Date().toISOString(),
+      });
+      if (walletUpdateErr) {
+        console.error("fashion wallet update error", walletUpdateErr);
+        return sendError(res, 500, "wallet_update_error", { error: walletUpdateErr.message });
+      }
+
+      return res.json({
+        ...payload,
+        credit: { spent: FASHION_CREDIT_COST, balance: newBalance },
+      });
+    }
+
+    // If Stability key is present, prefer Stability img2img for stronger layout preservation
+    if (STABILITY_API_KEY) {
+      // Expect baseImage (and optional refImage) as data URLs; convert to buffer
+      const { buffer: baseBuf, contentType } = dataUrlToBuffer(baseImage);
+      const refHint = refImage ? "Reference outfit image is provided." : "No reference image.";
+      const promptText = [
+        prompt || "",
+        "Keep the original person, pose, face, hair, hands, skin tone, shoes, lighting, and background exactly as in the base image.",
+        "Only replace the clothing/accessories mentioned (e.g., tops, bottoms, watch). If an item is not mentioned, leave it unchanged.",
+        refHint,
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      const form = new FormData();
+      const mime = contentType || "image/png";
+      const ext = mime.split("/")[1] || "png";
+      const blob = new Blob([baseBuf], { type: mime });
+      form.append("init_image", blob, `base.${ext}`);
+      form.append("cfg_scale", "7");
+      form.append("samples", "1");
+      form.append("steps", "35");
+      form.append("text_prompts[0][text]", promptText);
+      form.append("text_prompts[0][weight]", "1");
+
+      if (maskImage) {
+        const { buffer: maskBuf, contentType: maskType } = dataUrlToBuffer(maskImage);
+        const maskMime = maskType || "image/png";
+        const maskExt = maskMime.split("/")[1] || "png";
+        const maskBlob = new Blob([maskBuf], { type: maskMime });
+        form.append("mask_image", maskBlob, `mask.${maskExt}`);
+
+        const stabilityRes = await fetch(
+          "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image/masking",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${STABILITY_API_KEY}`,
+            },
+            body: form,
+          }
+        );
+
+        if (!stabilityRes.ok) {
+          const errText = await stabilityRes.text();
+          console.error("stability error", errText);
+          return sendError(res, stabilityRes.status || 500, "stability generation failed", {
+            error: errText,
+          });
+        }
+
+        const stabilityJson = await stabilityRes.json();
+        const art = stabilityJson?.artifacts?.[0];
+        if (!art?.base64) {
+          return sendError(res, 500, "stability generation failed", { raw: stabilityJson });
+        }
+
+        return await chargeAndRespond({
+          ok: true,
+          model: "stability-sdxl-inpaint",
+          dataUrl: `data:image/png;base64,${art.base64}`,
+          imageUrl: null,
+        });
+      } else {
+        form.append("image_strength", "0.35");
+        const stabilityRes = await fetch(
+          "https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${STABILITY_API_KEY}`,
+            },
+            body: form,
+          }
+        );
+
+        if (!stabilityRes.ok) {
+          const errText = await stabilityRes.text();
+          console.error("stability error", errText);
+          return sendError(res, stabilityRes.status || 500, "stability generation failed", {
+            error: errText,
+          });
+        }
+
+        const stabilityJson = await stabilityRes.json();
+        const art = stabilityJson?.artifacts?.[0];
+        if (!art?.base64) {
+          return sendError(res, 500, "stability generation failed", { raw: stabilityJson });
+        }
+
+        return await chargeAndRespond({
+          ok: true,
+          model: "stability-sdxl-img2img",
+          dataUrl: `data:image/png;base64,${art.base64}`,
+          imageUrl: null,
+        });
+      }
+    }
+
+    // Fallback: OpenAI text-to-image (layout not guaranteed)
+    const systemText =
+      "Replace only the outfits/accessories requested. Keep the original person, pose, face, hair, hands, skin tone, shoes, lighting, and background unchanged.";
+    const userText =
+      prompt ||
+      "Use the second picture as reference if present. Modify only the specified clothing parts; leave all other regions untouched.";
+
+    const promptText = `${systemText}\n${userText}\nOnly change clothing/accessories that are explicitly mentioned; everything else must remain identical to the base image.`;
+
+    const result = await openai.images.generate({
+      model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
+      prompt: promptText,
+      n: 1,
+      size: "1024x1024",
+    });
+
+    const item = result.data?.[0];
+    const dataUrl = item?.b64_json
+      ? `data:image/png;base64,${item.b64_json}`
+      : null;
+    const imageUrl = item?.url || null;
+
+    if (!dataUrl && !imageUrl) {
+      return sendError(res, 500, "image generation failed", { raw: item });
+    }
+
+    return await chargeAndRespond({
+      ok: true,
+      model: process.env.OPENAI_IMAGE_MODEL || "gpt-image-1",
+      dataUrl,
+      imageUrl,
+    });
+  } catch (err) {
+    console.error("fashion replace error:", err);
+    return sendError(res, 500, "replace failed", { error: err?.message });
+  }
+});
+
+// ===============================
+// 湲곗〈 湲곕뒫 2: ?대?吏 ?앹꽦 API
 // POST /api/generate-images
 // ===============================
 app.post("/api/generate-images", async (req, res) => {
@@ -149,7 +428,7 @@ app.post("/api/generate-images", async (req, res) => {
     keywordText +
     refText;
 
-  console.log("📨 [generate-images] mode=", mode);
+  console.log("?벂 [generate-images] mode=", mode);
   console.log("prompt length:", finalPrompt.length);
   console.log("reference count:", referenceUrls.length);
 
@@ -167,11 +446,11 @@ app.post("/api/generate-images", async (req, res) => {
       return null;
     });
 
-    console.log("✅ image urls (or data urls):", images);
+    console.log("??image urls (or data urls):", images);
 
     res.json({ images });
   } catch (err) {
-    console.error("❌ openai image error:");
+    console.error("??openai image error:");
     if (err.response) {
       console.error("status:", err.response.status);
       console.error("data:", err.response.data);
@@ -190,18 +469,18 @@ app.post("/api/generate-images", async (req, res) => {
 });
 
 
-// 크레딧/광고 설정 (수치만 여기서 조절하면 됨)
+// ?щ젅??愿묎퀬 ?ㅼ젙 (?섏튂留??ш린??議곗젅?섎㈃ ??
 const CREDIT_SYSTEM = {
   adReward: {
-    credits: 5,     // 광고 1회당 지급 크레딧
-    maxPerDay: 3    // 하루 최대 광고 보상 횟수
+    credits: 5,     // 愿묎퀬 1?뚮떦 吏湲??щ젅??
+    maxPerDay: 3    // ?섎（ 理쒕? 愿묎퀬 蹂댁긽 ?잛닔
   }
 };
 
 
 
 /**
- * 캐릭터 정보 조회 (상세 화면용)
+ * 罹먮┃???뺣낫 議고쉶 (?곸꽭 ?붾㈃??
  */
 app.get('/api/characters/:id', async (req, res) => {
   const { id } = req.params;
@@ -218,20 +497,23 @@ app.get('/api/characters/:id', async (req, res) => {
 });
 
 /**
- * 채팅 로그 조회 (최근 50개)
+ * 梨꾪똿 濡쒓렇 議고쉶 (理쒓렐 50媛?
  */
 app.get('/api/characters/:id/chats', async (req, res) => {
   const { id } = req.params;
-  const { sessionId } = req.query;
+  const { sessionId, since, limit } = req.query;
+
+  const safeLimit = Math.max(1, Math.min(Number(limit) || 50, 200));
 
   const query = supabase
     .from('character_chats')
     .select('*')
     .eq('character_id', id)
     .order('created_at', { ascending: true })
-    .limit(50);
+    .limit(safeLimit);
 
   if (sessionId) query.eq('session_id', sessionId);
+  if (since) query.gte('created_at', since);
 
   const { data, error } = await query;
 
@@ -240,7 +522,7 @@ app.get('/api/characters/:id/chats', async (req, res) => {
 });
 
 /**
- * 캐릭터와 채팅 (1턴)
+ * 罹먮┃?곗? 梨꾪똿 (1??
  * body: { sessionId, message }
  */
 app.post('/api/characters/:id/chat', async (req, res) => {
@@ -253,24 +535,66 @@ app.post('/api/characters/:id/chat', async (req, res) => {
   }
 
   if (!message || !sessionId) {
-    return res.status(400).json({ error: 'sessionId, message 필요' });
+    return res.status(400).json({ error: 'sessionId, message ?꾩슂' });
   }
 
   const CREDIT_COST_PER_MESSAGE = 10;
 
-  // 현재 wallet 조회 (없으면 0으로 간주)
-  const { data: wallet, error: walletError } = await supabase
-    .from('credit_wallets')
-    .select('balance, lifetime_used')
-    .eq('user_id', user.id)
-    .maybeSingle();
+  // ?꾩옱 wallet 議고쉶 (?놁쑝硫?0?쇰줈 媛꾩＜), 罹먮┃??理쒓렐 ????숈떆 ?붿껌?쇰줈 ?뺣났 ?뚯닔 媛먯냼
+  const creditDb = supabaseAdmin || supabase;
 
+  const [walletResult, characterResult, recentResult] = await Promise.all([
+    creditDb
+      .from('credit_wallets')
+      .select('balance, lifetime_used')
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('characters')
+      .select('id, name, prompt, intro')
+      .eq('id', id)
+      .single(),
+    supabase
+      .from('character_chats')
+      .select('role, content, created_at')
+      .eq('character_id', id)
+      .eq('session_id', sessionId)
+      .order('created_at', { ascending: true })
+      .limit(20)
+  ]);
+
+  const walletError = walletResult.error;
+  const wallet = walletResult.data;
   if (walletError) {
     console.error('character chat walletError', walletError);
     return res.status(500).json({ error: 'wallet_error' });
   }
 
-  const currentBalance = wallet?.balance ?? 0;
+  let currentBalance = wallet?.balance ?? 0;
+
+  // wallet 행이 없거나 값이 비어 있을 때, 트랜잭션 집계로 복구
+  if (!wallet) {
+    try {
+      const { data: agg, error: aggErr } = await creditDb
+        .from('credit_transactions')
+        .select('amount')
+        .eq('user_id', user.id);
+      if (aggErr) {
+        console.error('character chat tx aggregate error', aggErr);
+      } else {
+        const sum = (agg || []).reduce((acc, row) => acc + (row.amount || 0), 0);
+        currentBalance = sum;
+        await creditDb.from('credit_wallets').upsert({
+          user_id: user.id,
+          balance: sum,
+          lifetime_used: 0,
+          updated_at: new Date().toISOString()
+        });
+      }
+    } catch (e) {
+      console.error('character chat wallet fallback error', e);
+    }
+  }
   if (currentBalance < CREDIT_COST_PER_MESSAGE) {
     return res.status(402).json({
       error: 'insufficient_credits',
@@ -279,69 +603,40 @@ app.post('/api/characters/:id/chat', async (req, res) => {
     });
   }
 
-  // 1) 캐릭터 정보
-  const { data: character, error: charErr } = await supabase
-    .from('characters')
-    .select('id, name, prompt, intro')
-    .eq('id', id)
-    .single();
-
+  const charErr = characterResult.error;
+  const character = characterResult.data;
   if (charErr || !character) {
     return res.status(404).json({ error: 'character not found' });
   }
 
-  // 2) 최근 대화 20개 (이 세션 기준)
-  const { data: recentMessages, error: chatErr } = await supabase
-    .from('character_chats')
-    .select('role, content, created_at')
-    .eq('character_id', id)
-    .eq('session_id', sessionId)
-    .order('created_at', { ascending: true })
-    .limit(20);
-
+  const chatErr = recentResult.error;
+  const recentMessages = recentResult.data;
   if (chatErr) {
     return res.status(500).json({ error: chatErr.message });
   }
 
-  // 3) 사용자 메시지 먼저 DB에 기록
-  const { data: insertedUserMsg, error: insertUserErr } = await supabase
-    .from('character_chats')
-    .insert({
-      character_id: id,
-      user_id: user.id ?? null,
-      session_id: sessionId,
-      role: 'user',
-      content: message
-    })
-    .select()
-    .single();
-
-  if (insertUserErr) {
-    return res.status(500).json({ error: insertUserErr.message });
-  }
-
-  // 4) LLM 프롬프트 구성 (최적화 버전의 "간단 모드")
+  // 3) LLM ?꾨＼?꾪듃 援ъ꽦 (理쒖쟻??踰꾩쟾??"媛꾨떒 紐⑤뱶")
   const systemPrompt = `
-당신은 "${character.name}"이라는 캐릭터입니다.
-아래의 캐릭터 설정과 말투를 철저히 따라야 합니다.
+?뱀떊? "${character.name}"?대씪??罹먮┃?곗엯?덈떎.
+?꾨옒??罹먮┃???ㅼ젙怨?留먰닾瑜?泥좎????곕씪???⑸땲??
 
-[캐릭터 설정]
+[罹먮┃???ㅼ젙]
 ${character.prompt ?? ''}
 
-[인트로 / 배경]
+[?명듃濡?/ 諛곌꼍]
 ${character.intro ?? ''}
 
-규칙:
-- 캐릭터의 말투를 유지하세요.
-- 너무 긴 답변 대신 2~4문단 정도로 답변하세요.
+洹쒖튃:
+- 罹먮┃?곗쓽 留먰닾瑜??좎??섏꽭??
+- ?덈Т 湲??듬? ???2~4臾몃떒 ?뺣룄濡??듬??섏꽭??
 `;
 
 
-  // 4-1) summary 불러오기
+  // 4-1) summary 遺덈윭?ㅺ린 (理쒓렐 1媛?+ 硫뷀??곗씠???ы븿??以묐났 insert 諛⑹?)
   let summaryText = '';
   const { data: summaryData } = await supabase
     .from('character_summaries')
-    .select('summary')
+    .select('id, summary, metadata, created_at')
     .eq('character_id', id)
     .order('created_at', { ascending: false })
     .limit(1);
@@ -349,12 +644,12 @@ ${character.intro ?? ''}
     summaryText = summaryData[0].summary;
   }
 
-  // 4-2) 프롬프트 메시지 구성
+  // 4-2) ?꾨＼?꾪듃 硫붿떆吏 援ъ꽦
   const messagesForModel = [
     { role: 'system', content: systemPrompt }
   ];
   if (summaryText) {
-    messagesForModel.push({ role: 'system', content: `[장기 요약]\n${summaryText}` });
+    messagesForModel.push({ role: 'system', content: `[?κ린 ?붿빟]\n${summaryText}` });
   }
   if (recentMessages && recentMessages.length > 0) {
     for (const m of recentMessages) {
@@ -367,14 +662,14 @@ ${character.intro ?? ''}
   }
   messagesForModel.push({ role: 'user', content: message });
 
-  // 4-3) 대화가 20개 이상이면 요약 생성 및 저장
+  // 4-3) ??붽? 20媛??댁긽?대㈃ ?붿빟 ?앹꽦 諛????湲곗〈 ?붿빟? ?낅뜲?댄듃)
   if (recentMessages && recentMessages.length >= 20) {
     try {
-      const summaryPrompt = `다음은 캐릭터와 사용자의 대화 기록입니다. 캐릭터의 성격, 관계, 주요 사건, 감정 변화, 중요한 정보 등을 요약해 주세요.\n\n${recentMessages.map(m => `${m.role}: ${m.content}`).join('\n')}`;
+      const summaryPrompt = `?ㅼ쓬? 罹먮┃?곗? ?ъ슜?먯쓽 ???湲곕줉?낅땲?? 罹먮┃?곗쓽 ?깃꺽, 愿怨? 二쇱슂 ?ш굔, 媛먯젙 蹂?? 以묒슂???뺣낫 ?깆쓣 ?붿빟??二쇱꽭??\n\n${recentMessages.map(m => `${m.role}: ${m.content}`).join('\n')}`;
       const summaryRes = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: '당신은 대화 요약 전문가입니다.' },
+          { role: 'system', content: '?뱀떊? ????붿빟 ?꾨Ц媛?낅땲??' },
           { role: 'user', content: summaryPrompt }
         ],
         max_tokens: 256,
@@ -382,18 +677,31 @@ ${character.intro ?? ''}
       });
       const newSummary = summaryRes.choices[0]?.message?.content?.trim() ?? '';
       if (newSummary) {
-        await supabase.from('character_summaries').insert({
-          character_id: id,
-          summary: newSummary,
-          metadata: { session_id: sessionId, user_id: user.id }
-        });
+        const latestSummary = summaryData?.[0];
+        const existingSessionId = latestSummary?.metadata?.session_id;
+        if (latestSummary && existingSessionId === sessionId) {
+          await supabase
+            .from('character_summaries')
+            .update({
+              summary: newSummary,
+              metadata: { session_id: sessionId, user_id: user.id },
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', latestSummary.id);
+        } else {
+          await supabase.from('character_summaries').insert({
+            character_id: id,
+            summary: newSummary,
+            metadata: { session_id: sessionId, user_id: user.id }
+          });
+        }
       }
     } catch (e) {
-      console.error('요약 생성 오류:', e);
+      console.error('?붿빟 ?앹꽦 ?ㅻ쪟:', e);
     }
   }
 
-  // 5) OpenAI 호출
+  // 5) OpenAI ?몄텧
   let completion;
   try {
     completion = await openai.chat.completions.create({
@@ -404,7 +712,7 @@ ${character.intro ?? ''}
     });
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ error: 'LLM 호출 실패' });
+    return res.status(500).json({ error: 'LLM ?몄텧 ?ㅽ뙣' });
   }
 
   const replyText = completion.choices[0]?.message?.content?.trim() ?? '';
@@ -413,16 +721,16 @@ ${character.intro ?? ''}
   const outputTokens = usage.completion_tokens ?? 0;
   const totalTokens = usage.total_tokens ?? (inputTokens + outputTokens);
 
-  // 5-1) 크레딧 차감 (고정 10 크레딧/전송)
+  // 5-1) ?щ젅??李④컧 (怨좎젙 10 ?щ젅???꾩넚)
   const newBalance = currentBalance - CREDIT_COST_PER_MESSAGE;
 
-  const { error: txError } = await supabase
+  const { error: txError } = await creditDb
     .from('credit_transactions')
     .insert({
       user_id: user.id,
       subscription_id: null,
-      tx_type: 'spend',
-      category: 'character_chat',
+      tx_type: CREDIT_TX_TYPE_SPEND,
+      category: CREDIT_CATEGORY_CHAT,
       service_code: 'CHARACTER',
       amount: -CREDIT_COST_PER_MESSAGE,
       balance_after: newBalance,
@@ -435,7 +743,7 @@ ${character.intro ?? ''}
     return res.status(500).json({ error: 'tx_error' });
   }
 
-  const { error: walletUpdateErr } = await supabase
+  const { error: walletUpdateErr } = await creditDb
     .from('credit_wallets')
     .upsert({
       user_id: user.id,
@@ -449,10 +757,21 @@ ${character.intro ?? ''}
     return res.status(500).json({ error: 'wallet_update_error' });
   }
 
-  // 6) 캐릭터 답변도 DB에 기록
-  const { data: insertedCharMsg, error: insertCharErr } = await supabase
-    .from('character_chats')
-    .insert({
+  // 6) ???濡쒓렇瑜???踰덉쓽 insert濡???ν븯???몄텧 ???덇컧
+  const insertedAt = new Date();
+  const userCreatedAt = insertedAt.toISOString();
+  const characterCreatedAt = new Date(insertedAt.getTime() + 1).toISOString();
+
+  const chatRows = [
+    {
+      character_id: id,
+      user_id: user.id ?? null,
+      session_id: sessionId,
+      role: 'user',
+      content: message,
+      created_at: userCreatedAt
+    },
+    {
       character_id: id,
       user_id: user.id ?? null,
       session_id: sessionId,
@@ -462,16 +781,36 @@ ${character.intro ?? ''}
       input_tokens: inputTokens,
       output_tokens: outputTokens,
       credit_spent: CREDIT_COST_PER_MESSAGE,
-      metadata: usage
-    })
-    .select()
-    .single();
+      metadata: usage,
+      created_at: characterCreatedAt
+    }
+  ];
 
-  if (insertCharErr) {
-    return res.status(500).json({ error: insertCharErr.message });
+  const { data: insertedChats, error: insertChatErr } = await creditDb
+    .from('character_chats')
+    .insert(chatRows)
+    .select('id, character_id, session_id, role, content, created_at, user_id, model, input_tokens, output_tokens, credit_spent, metadata');
+
+  if (insertChatErr) {
+    return res.status(500).json({ error: insertChatErr.message });
   }
 
-  // 7) 응답
+  const insertedUserMsg = insertedChats.find((m) => m.role === 'user');
+  const insertedCharMsg = insertedChats.find((m) => m.role === 'character');
+
+  // 6-1) ?ㅻ옒?????蹂댁〈 ?뺤콉 (湲곕낯 90?? - 鍮꾨룞湲?
+  const RETENTION_DAYS = 90;
+  const retentionCutoff = new Date(Date.now() - RETENTION_DAYS * 24 * 60 * 60 * 1000).toISOString();
+  supabase
+    .from('character_chats')
+    .delete()
+    .lt('created_at', retentionCutoff)
+    .eq('character_id', id)
+    .then(({ error }) => {
+      if (error) console.error('character chat retention cleanup error', error);
+    });
+
+  // 7) ?묐떟
   res.json({
     userMessage: insertedUserMsg,
     characterMessage: insertedCharMsg,
@@ -490,7 +829,7 @@ ${character.intro ?? ''}
 
 
 
-// 상품/플랜 설정 내려주는 API
+// ?곹뭹/?뚮옖 ?ㅼ젙 ?대젮二쇰뒗 API
 app.get('/api/credit-config', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -527,10 +866,10 @@ app.get('/api/credit-config', async (req, res) => {
   }
 });
 
-// ad-session 생성: 보상형 광고를 시작하기 전 서버에서 세션을 생성합니다.
-// - 클라이언트는 /api/ad-session을 호출해 sessionId를 받고,
-//   이 sessionId를 광고 태그의 cust_params에 포함시켜 광고 요청/리포팅에 연결합니다.
-// - 광고 완료 시 클라이언트는 /api/earn-credits로 sessionId를 제출하고 서버는 session을 검증한 뒤 지급합니다.
+// ad-session ?앹꽦: 蹂댁긽??愿묎퀬瑜??쒖옉?섍린 ???쒕쾭?먯꽌 ?몄뀡???앹꽦?⑸땲??
+// - ?대씪?댁뼵?몃뒗 /api/ad-session???몄텧??sessionId瑜?諛쏄퀬,
+//   ??sessionId瑜?愿묎퀬 ?쒓렇??cust_params???ы븿?쒖폒 愿묎퀬 ?붿껌/由ы룷?낆뿉 ?곌껐?⑸땲??
+// - 愿묎퀬 ?꾨즺 ???대씪?댁뼵?몃뒗 /api/earn-credits濡?sessionId瑜??쒖텧?섍퀬 ?쒕쾭??session??寃利앺븳 ??吏湲됲빀?덈떎.
 app.post('/api/ad-session', async (req, res) => {
   try {
     const user = await getUserFromRequest(req);
@@ -561,7 +900,7 @@ app.post('/api/ad-session', async (req, res) => {
   }
 });
 
-// 광고 보기로 크레딧 얻기
+// 愿묎퀬 蹂닿린濡??щ젅???산린
 app.post('/api/earn-credits', async (req, res) => {
   try {
     const user = await getUserFromRequest(req);
@@ -575,7 +914,7 @@ app.post('/api/earn-credits', async (req, res) => {
     const { sessionId, verification } = req.body || {};
     let adNetworkForTx = 'web_reward';
 
-    // today 0시 check (moved down)
+    // today 0??check (moved down)
     // If sessionId exists, verify session record
     if (sessionId) {
       try {
@@ -630,7 +969,7 @@ app.post('/api/earn-credits', async (req, res) => {
       }
     }
 
-    // 오늘 0시 ~ 지금
+    // ?ㅻ뒛 0??~ 吏湲?
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
 
@@ -638,7 +977,7 @@ app.post('/api/earn-credits', async (req, res) => {
       .from('credit_transactions')
       .select('id')
       .eq('user_id', userId)
-      .eq('category', 'ad_reward')   // enum/타입 이름에 맞게 필요 시 수정
+      .eq('category', 'ad_reward')   // enum/????대쫫??留욊쾶 ?꾩슂 ???섏젙
       .gte('occurred_at', todayStart.toISOString());
 
     if (rewardsError) {
@@ -651,11 +990,11 @@ app.post('/api/earn-credits', async (req, res) => {
       return res.json({
         success: false,
         error: 'limit_reached',
-        message: '오늘은 더 이상 광고 보상을 받을 수 없습니다.'
+        message: '?ㅻ뒛? ???댁긽 愿묎퀬 蹂댁긽??諛쏆쓣 ???놁뒿?덈떎.'
       });
     }
 
-    // 현재 wallet 조회
+    // ?꾩옱 wallet 議고쉶
     const { data: wallet, error: walletError } = await supabase
       .from('credit_wallets')
       .select('balance, lifetime_used')
@@ -671,14 +1010,14 @@ app.post('/api/earn-credits', async (req, res) => {
     const add = CREDIT_SYSTEM.adReward.credits;
     const newBalance = currentBalance + add;
 
-    // 트랜잭션 기록
+    // ?몃옖??뀡 湲곕줉
     const { error: txError } = await supabase
       .from('credit_transactions')
       .insert({
         user_id: userId,
         subscription_id: null,
-        tx_type: 'earn',              // 실제 enum 값에 맞게 필요 시 수정
-        category: 'ad_reward',        // 실제 타입에 맞게 필요 시 수정
+        tx_type: 'earn',              // ?ㅼ젣 enum 媛믪뿉 留욊쾶 ?꾩슂 ???섏젙
+        category: 'ad_reward',        // ?ㅼ젣 ??낆뿉 留욊쾶 ?꾩슂 ???섏젙
         service_code: 'GLOBAL',
         amount: add,
         balance_after: newBalance,
@@ -720,11 +1059,11 @@ app.post('/api/earn-credits', async (req, res) => {
 });
 
 
-// 플랜 구매 시작 (구독권/크레딧 팩 공통)
-// 구매(구독) 시작: Paddle 연동 지원
-// - planCode 를 받아 plans 테이블에서 상품 정보를 찾습니다.
-// - plans.features.paddle_product_id 또는 plans.features.paddle_link 존재 시 Paddle 결제 링크를 생성해서 반환합니다.
-// - PADDLE_VENDOR_ID / PADDLE_VENDOR_AUTH_CODE 는 .env 에 설정해서 사용하세요 (절대 코드에 키를 하드코딩하지 마세요).
+// ?뚮옖 援щℓ ?쒖옉 (援щ룆沅??щ젅????怨듯넻)
+// 援щℓ(援щ룆) ?쒖옉: Paddle ?곕룞 吏??
+// - planCode 瑜?諛쏆븘 plans ?뚯씠釉붿뿉???곹뭹 ?뺣낫瑜?李얠뒿?덈떎.
+// - plans.features.paddle_product_id ?먮뒗 plans.features.paddle_link 議댁옱 ??Paddle 寃곗젣 留곹겕瑜??앹꽦?댁꽌 諛섑솚?⑸땲??
+// - PADDLE_VENDOR_ID / PADDLE_VENDOR_AUTH_CODE ??.env ???ㅼ젙?댁꽌 ?ъ슜?섏꽭??(?덈? 肄붾뱶???ㅻ? ?섎뱶肄붾뵫?섏? 留덉꽭??.
 app.post('/api/buy-plan', async (req, res) => {
   try {
     const user = await getUserFromRequest(req);
@@ -736,7 +1075,7 @@ app.post('/api/buy-plan', async (req, res) => {
 
     console.log('buy-plan request', user.id, planCode);
 
-    // 1) plan 조회
+    // 1) plan 議고쉶
     const { data: planData, error: planError } = await supabase
       .from('plans')
       .select('*')
@@ -752,12 +1091,12 @@ app.post('/api/buy-plan', async (req, res) => {
       return res.status(404).json({ success: false, error: 'plan_not_found' });
     }
 
-    // 새로 추가: Paddle 연동 (환경변수에 PADDLE_VENDOR_* 설정되어 있어야 함)
+    // ?덈줈 異붽?: Paddle ?곕룞 (?섍꼍蹂?섏뿉 PADDLE_VENDOR_* ?ㅼ젙?섏뼱 ?덉뼱????
     const PADDLE_VENDOR_ID = process.env.PADDLE_VENDOR_ID;
     const PADDLE_VENDOR_AUTH_CODE = process.env.PADDLE_VENDOR_AUTH_CODE;
 
-    // 계획(features) 내부에서 paddle 관련 정보를 찾습니다.
-    // 추천: plans.features JSON에 paddle_product_id 또는 paddle_link 를 저장하세요.
+    // 怨꾪쉷(features) ?대??먯꽌 paddle 愿???뺣낫瑜?李얠뒿?덈떎.
+    // 異붿쿇: plans.features JSON??paddle_product_id ?먮뒗 paddle_link 瑜???ν븯?몄슂.
     const features = planData.features || {};
     const paddleProductId = features.paddle_product_id || null;
     const paddleLink = features.paddle_link || null;
@@ -837,7 +1176,7 @@ app.post('/api/buy-plan', async (req, res) => {
 
     // TODO: implement other payment providers if needed
 
-    // No paddle info / config — fallback
+    // No paddle info / config ??fallback
     return res.json({ success: true, checkoutUrl: '/coming-soon.html' });
   } catch (e) {
     console.error('buy-plan exception', e);
@@ -850,7 +1189,7 @@ app.post('/api/buy-plan', async (req, res) => {
 
 
 // ===============================
-// 서버 시작
+// ?쒕쾭 ?쒖옉
 // ===============================
 // If certificate files (or env vars) are available, start HTTPS server for local dev
 const CERT_KEY_PATH = process.env.CERT_KEY_PATH || './certs/localhost-key.pem';
@@ -874,5 +1213,6 @@ if (fs.existsSync(CERT_KEY_PATH) && fs.existsSync(CERT_PEM_PATH)) {
     console.log(`HTTP server running on http://localhost:${PORT}`);
   });
 }
+
 
 
