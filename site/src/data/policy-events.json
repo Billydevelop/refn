@@ -58,6 +58,20 @@
   {
     "month": 8,
     "day": 3,
+    "title": "아산테크노밸리 더원 7차 (Ab4BL) 청약접수",
+    "cat": "housing",
+    "desc": "충청남도 아산시 둔포면 아산테크노밸리 Ab4BL (아산시 둔포면 석곡리 1818번지 일원) · 접수 2026-08-03~2026-08-05",
+    "url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000295&pblancNo=2026000295",
+    "target": "all",
+    "field": "housing",
+    "ageGroup": "all",
+    "region": "all",
+    "source": "applyhome",
+    "id": "apt-2026000295"
+  },
+  {
+    "month": 8,
+    "day": 3,
     "title": "센트레빌 아스테리움 거제 청약접수",
     "cat": "housing",
     "desc": "경상남도 거제시 상동동 681-2번지 일원 · 접수 2026-08-03~2026-08-05",
