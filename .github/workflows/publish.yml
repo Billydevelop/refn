@@ -54,6 +54,7 @@ jobs:
         working-directory: automation
         run: npm install
       - name: Generate article
+        id: generate
         if: steps.guard.outputs.skip == 'false'
         working-directory: automation
         env:
@@ -73,7 +74,25 @@ jobs:
           R2_PUBLIC_BASE: ${{ vars.R2_PUBLIC_BASE }}
           R2_AUDIO_BUCKET: ${{ vars.R2_AUDIO_BUCKET }}
           R2_AUDIO_PUBLIC_BASE: ${{ vars.R2_AUDIO_PUBLIC_BASE }}
-        run: node run.js --no-poll ${{ github.event.inputs.category && format('--category={0}', github.event.inputs.category) || '' }}
+        # 실패 로그를 파일로 남겨야 다음 스텝이 원인을 분류해 경보할 수 있다
+        run: |
+          set -o pipefail
+          node run.js --no-poll ${{ github.event.inputs.category && format('--category={0}', github.event.inputs.category) || '' }} 2>&1 | tee "$RUNNER_TEMP/generate.log"
+
+      # ── 즉시 경보: 생성 단계가 죽으면 슬롯을 기다리지 않고 바로 알린다 ──
+      #    크레딧 소진·키 만료처럼 스스로 복구 안 되는 장애는 이메일까지 발송.
+      #    (2026-07-24~08-05 13일 누락이 '마지막 슬롯 Slack 한 줄'만 있어서 생긴 사고)
+      - name: 생성 실패 즉시 경보
+        if: failure() && steps.generate.outcome == 'failure'
+        working-directory: automation
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ALERT_EMAIL: ${{ vars.ALERT_EMAIL }}
+          VAPID_SUBJECT: ${{ vars.VAPID_SUBJECT || 'mailto:gmlthd94@gmail.com' }}
+          # 첫 슬롯(07:05)·마지막 슬롯(08:15)·수동 실행에서만 메일 — 하루 최대 2통
+          ALERT_EMAIL_ENABLED: ${{ (github.event.schedule == '5 22 * * *' || github.event.schedule == '15 23 * * *' || github.event_name == 'workflow_dispatch') && '1' || '0' }}
+        run: node alert-failure.js "$RUNNER_TEMP/generate.log"
 
       - name: Commit & push
         if: steps.guard.outputs.skip == 'false'
