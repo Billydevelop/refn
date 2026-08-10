@@ -24,18 +24,30 @@ const KINDS = [
     action: `크레딧을 충전해야 복구됩니다: ${CONSOLE_BILLING}\n충전 전까지 매일 4개 슬롯이 전부 실패합니다.`,
   },
   {
-    test: /authentication_error|invalid x-api-key|401/i,
+    // 401/429 는 숫자만으로 매칭하면 빌드 로그(페이지 수 등)에 오탐하므로 문맥을 함께 요구한다
+    test: /authentication_error|invalid x-api-key|status:?\s*401\b/i,
     kind: 'AUTH',
     blocking: true,
     title: 'Anthropic API 키 인증 실패 — 자동 발행 전면 중단',
     action: `키가 만료·회수됐을 수 있습니다. 새 키 발급 후 GitHub Secret ANTHROPIC_API_KEY 를 갱신하세요.\n${CONSOLE_BILLING}`,
   },
   {
-    test: /rate_limit_error|429/i,
+    test: /rate_limit_error|status:?\s*429\b/i,
     kind: 'RATE',
     blocking: false,
     title: 'Anthropic API 레이트리밋 — 이번 슬롯 실패',
     action: '다음 백업 슬롯이 재시도합니다. 반복되면 한도를 확인하세요.',
+  },
+  {
+    // 빌드가 깨지면 커밋을 막아 배포는 지키지만, 방치하면 매일 발행이 0이 된다.
+    // 2026-08-07 사고는 반대로 '커밋은 되고 빌드만 깨진' 경우라 3일간 아무도 몰랐다.
+    test: /Could not parse expression with acorn|@mdx-js\/rollup|\[vite\][\s\S]*Build failed|astro build.*(failed|ERROR)/i,
+    kind: 'BUILD',
+    blocking: true,
+    title: '사이트 빌드 실패 — 글 커밋을 차단함(배포는 안전)',
+    action:
+      '생성된 MDX 가 컴파일되지 않아 커밋하지 않았습니다. 로그의 파일·행 번호를 보고 수정하세요.\n' +
+      '자동 교정(fix-mdx.js)이 못 잡은 새로운 파손 패턴일 수 있습니다.',
   },
   {
     test: /overloaded_error|529/i,

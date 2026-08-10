@@ -94,6 +94,32 @@ jobs:
           ALERT_EMAIL_ENABLED: ${{ (github.event.schedule == '5 22 * * *' || github.event.schedule == '15 23 * * *' || github.event_name == 'workflow_dispatch') && '1' || '0' }}
         run: node alert-failure.js "$RUNNER_TEMP/generate.log"
 
+      # ── 빌드 게이트: 컴파일 안 되는 글이 main 에 올라가는 것을 원천 차단 ──
+      #    이 워크플로는 원래 빌드 없이 커밋만 했다. 그래서 2026-08-07 생성분의
+      #    MDX 파손(<KeyTakeaways items={[...] />)이 그대로 push 됐고, 이후 Vercel 빌드가
+      #    연쇄 실패해 8/7~8/9 글 3편이 '커밋은 됐는데 사이트엔 404'인 채로 3일 방치됐다.
+      #    → 커밋 전에 실제로 빌드해보고, 깨지면 커밋하지 않는다(발행 1회 손실 < 배포 전면 중단).
+      - name: 빌드 검증(깨진 MDX 차단)
+        id: verify
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          set -o pipefail
+          # 알려진 AI 생성 파손 패턴을 먼저 자동 교정 — 잡히면 글을 버리지 않아도 된다
+          node automation/fix-mdx.js 2>&1 | tee -a "$RUNNER_TEMP/generate.log"
+          npm ci --prefix site --no-audit --no-fund 2>&1 | tail -5
+          npm run build --prefix site 2>&1 | tee -a "$RUNNER_TEMP/generate.log" | tail -15
+
+      - name: 빌드 실패 즉시 경보
+        if: failure() && steps.verify.outcome == 'failure'
+        working-directory: automation
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ALERT_EMAIL: ${{ vars.ALERT_EMAIL }}
+          VAPID_SUBJECT: ${{ vars.VAPID_SUBJECT || 'mailto:gmlthd94@gmail.com' }}
+          ALERT_EMAIL_ENABLED: ${{ (github.event.schedule == '5 22 * * *' || github.event.schedule == '15 23 * * *' || github.event_name == 'workflow_dispatch') && '1' || '0' }}
+        run: node alert-failure.js "$RUNNER_TEMP/generate.log"
+
       - name: Commit & push
         if: steps.guard.outputs.skip == 'false'
         run: |
