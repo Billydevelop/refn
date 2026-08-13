@@ -81,8 +81,21 @@ export async function generatePredictionCommentary(summary) {
  * 1) 리서치 — web_search 로 상위 콘텐츠 트렌드·검색의도·커버리지 갭 분석.
  *    원문 복제 금지, 구조/각도/키워드만 추출.
  */
+// 프롬프트에 현재 시점을 명시하지 않으면 모델이 학습 시점 연도를 쓴다.
+// 실제로 2026-08 발행분 제목이 "2024 AI 툴 리뷰", "2025 직장인 부업 가이드"로 나와
+// 홈 최상단에 지난 연도 글처럼 노출됐다. 모든 생성 단계에 오늘 날짜를 주입한다.
+function todayKo() {
+  const d = new Date();
+  return {
+    year: d.getFullYear(),
+    full: `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`,
+  };
+}
+
 export async function research({ topic, keywords }) {
+  const { year, full } = todayKo();
   const system =
+    `오늘은 ${full}이다. 조사와 서술의 기준 시점은 ${year}년이며, 과거 연도를 현재처럼 쓰지 마라. ` +
     '너는 한국어 콘텐츠 전략가다. 주어진 주제를 웹에서 조사해, 상위 노출 글들이 공통으로 다루는 소주제, ' +
     '검색자의 의도, 아직 충분히 다뤄지지 않은 차별화 포인트(커버리지 갭)를 정리한다. ' +
     '절대 특정 글의 문장이나 표현을 복제하지 말고, 사실·구조·각도만 요약한다. 한국어로 답한다.';
@@ -128,7 +141,9 @@ export async function research({ topic, keywords }) {
  */
 export async function writeArticle({ brief, cluster, categoryName, lang = 'ko' }) {
   // --- 1) 본문: 자유 텍스트(MDX)로 길게 생성 (구조화출력에 욱여넣지 않음) ---
+  const { year, full } = todayKo();
   const system =
+    `오늘은 ${full}이다. 모든 서술의 현재 시점은 ${year}년이다. ` +
     `너는 "${categoryName}" 분야의 전문 에디터다. 한국어로 깊이 있고 정확한 SEO 원본 글을 쓴다. ` +
     '다른 매체의 문장을 복제하지 않으며, 실전에 바로 쓰이는 구체적 정보와 예시를 담는다.';
 
@@ -182,7 +197,11 @@ export async function writeArticle({ brief, cluster, categoryName, lang = 'ko' }
   const metaResp = await client.messages.create({
     model: WRITE_MODEL,
     max_tokens: 800,
-    system: '너는 SEO 메타데이터 생성기다. 한국어 제목(검색 친화적, 30자 내외)과 설명(120자 내외), 영문 kebab-case 슬러그, 태그 4~6개를 만든다.',
+    system:
+      `오늘은 ${todayKo().full}이다. ` +
+      '너는 SEO 메타데이터 생성기다. 한국어 제목(검색 친화적, 30자 내외)과 설명(120자 내외), 영문 kebab-case 슬러그, 태그 4~6개를 만든다. ' +
+      // 연도를 박으면 이듬해에 곧바로 낡아 보인다. 롱테일 유입이 주력이므로 기본은 연도 없는 제목.
+      `제목·슬러그에 연도를 넣지 마라. 연도가 의미의 핵심인 주제(제도 개편 등)일 때만 ${todayKo().year}를 쓰고, 과거 연도는 절대 쓰지 마라.`,
     messages: [
       {
         role: 'user',
