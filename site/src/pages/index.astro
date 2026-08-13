@@ -73,7 +73,22 @@ const circles = [
   { label: '용어집', href: '/glossary/', name: 'glossary' },
 ];
 
-const latest = posts.filter((p) => !guideSlugs.includes(p.id)).slice(0, 8);
+// 홈 '최신' 8칸 — 발행 파이프라인이 한 카테고리를 몰아 쓰는 시기가 있어(2026-08 초 8칸 중 5칸이 부업)
+// 최신순만 쓰면 같은 주제가 줄줄이 걸린다. 날짜 순서는 유지하되 같은 카테고리가 연속되지 않도록
+// 다음 후보를 한 칸 뒤로 미룬다(대체할 다른 카테고리가 없으면 그냥 최신순 그대로).
+function deClump<T extends { data: { category: string } }>(list: T[], size: number): T[] {
+  const pool = [...list];
+  const out: T[] = [];
+  while (pool.length && out.length < size) {
+    const prev = out[out.length - 1]?.data.category;
+    let i = pool.findIndex((p) => p.data.category !== prev);
+    if (i === -1) i = 0; // 남은 게 전부 같은 카테고리면 최신순 유지
+    out.push(pool.splice(i, 1)[0]);
+  }
+  return out;
+}
+
+const latest = deClump(posts.filter((p) => !guideSlugs.includes(p.id)), 8);
 const byCategory = (slug: 'money' | 'ai' | 'income') =>
   posts.filter((p) => p.data.category === slug).slice(0, 4);
 
