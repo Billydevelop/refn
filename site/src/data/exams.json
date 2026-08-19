@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-30",
+  "generatedAt": "2026-08-19",
   "getEList": [
     {
       "item": "<description>기사,산업기사(2026년도 제1회)</description><docexamdt>20260130</docexamdt><docpassdt>20260311</docpassdt><docregenddt>20260115</docregenddt><docregstartdt>20260112</docregstartdt><docsubmitentdt>20260320</docsubmitentdt><docsubmitstartdt>20260130</docsubmitstartdt><pracexamenddt>20260506</pracexamenddt><pracexamstartdt>20260418</pracexamstartdt><pracpassdt>20260605</pracpassdt><pracregenddt>20260326</pracregenddt><pracregstartdt>20260323</pracregstartdt>"
@@ -155,13 +155,16 @@
       "item": "<description>기술사(2026년도 제139회)</description><docexamdt>20260516</docexamdt><docpassdt>20260624</docpassdt><docregenddt>20260416</docregenddt><docregstartdt>20260413</docregstartdt><docsubmitentdt>20260703</docsubmitentdt><docsubmitstartdt>20260518</docsubmitstartdt><pracexamenddt>20260815</pracexamenddt><pracexamstartdt>20260801</pracexamstartdt><pracpassdt>20260828</pracpassdt><pracregenddt>20260611</pracregenddt><pracregstartdt>20260608</pracregstartdt>"
     },
     {
-      "item": "<description>기술사(2026년도 제139회)</description><docexamdt>20260516</docexamdt><docpassdt>20260624</docpassdt><docregenddt>20260511</docregenddt><docregstartdt>20260510</docregstartdt><docsubmitentdt>20260703</docsubmitentdt><docsubmitstartdt>20260518</docsubmitstartdt><pracexamenddt>20260815</pracexamenddt><pracexamstartdt>20260801</pracexamstartdt><pracpassdt>20260828</pracpassdt><pracregenddt>20260728</pracregenddt><pracregstartdt>20260726</pracregstartdt>"
+      "item": "<description>기술사(2026년도 제139회)</description><docexamdt>20260516</docexamdt><docpassdt>20260624</docpassdt><docregenddt>20260511</docregenddt><docregstartdt>20260510</docregstartdt><docsubmitentdt>20260703</docsubmitentdt><docsubmitstartdt>20260518</docsubmitstartdt><pracexamenddt>20260815</pracexamenddt><pracexamstartdt>20260801</pracexamstartdt><pracpassdt>20260828</pracpassdt><pracregenddt>20260727</pracregenddt><pracregstartdt>20260726</pracregstartdt>"
     },
     {
       "item": "<description>기술사(2026년도 제140회)</description><docexamdt>20260822</docexamdt><docpassdt>20261007</docpassdt><docregenddt>20260716</docregenddt><docregstartdt>20260713</docregstartdt><docsubmitentdt>20261016</docsubmitentdt><docsubmitstartdt>20260824</docsubmitstartdt><pracexamenddt>20261125</pracexamenddt><pracexamstartdt>20261114</pracexamstartdt><pracpassdt>20261211</pracpassdt><pracregenddt>20261015</pracregenddt><pracregstartdt>20261012</pracregstartdt>"
     },
     {
       "item": "<description>기술사(2026년도 제140회)</description><docexamdt>20260822</docexamdt><docpassdt>20261007</docpassdt><docregenddt>20260716</docregenddt><docregstartdt>20260713</docregstartdt><docsubmitentdt>20261016</docsubmitentdt><docsubmitstartdt>20260824</docsubmitstartdt><pracexamenddt>20261125</pracexamenddt><pracexamstartdt>20261114</pracexamstartdt><pracpassdt>20261211</pracpassdt><pracregenddt>20260903</pracregenddt><pracregstartdt>20260831</pracregstartdt>"
+    },
+    {
+      "item": "<description>기술사(2026년도 제140회)</description><docexamdt>20260822</docexamdt><docpassdt>20261007</docpassdt><docregenddt>20260817</docregenddt><docregstartdt>20260816</docregstartdt><docsubmitentdt>20261016</docsubmitentdt><docsubmitstartdt>20260824</docsubmitstartdt><pracexamenddt>20261125</pracexamenddt><pracexamstartdt>20261114</pracexamstartdt><pracpassdt>20261211</pracpassdt><pracregenddt>20261109</pracregenddt><pracregstartdt>20261108</pracregstartdt>"
     }
   ],
   "getJMList": []
