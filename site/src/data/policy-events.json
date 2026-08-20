@@ -1,20 +1,6 @@
 [
   {
     "month": 8,
-    "day": 19,
-    "title": "두산위브더제니스 부천 청약접수",
-    "cat": "housing",
-    "desc": "경기도 부천시 소사구 소사본동 88-39번지 일대 · 접수 2026-08-19~2026-08-21",
-    "url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000382&pblancNo=2026000382",
-    "target": "all",
-    "field": "housing",
-    "ageGroup": "all",
-    "region": "gyeonggi",
-    "source": "applyhome",
-    "id": "apt-2026000382"
-  },
-  {
-    "month": 8,
     "day": 24,
     "title": "포레나힐스테이트 진주 청약접수",
     "cat": "housing",
