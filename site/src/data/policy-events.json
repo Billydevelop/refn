@@ -44,6 +44,34 @@
   {
     "month": 9,
     "day": 7,
+    "title": "문수데시앙2단지 공가세대 일반공급 청약접수",
+    "cat": "housing",
+    "desc": "울산광역시 울주군 청량읍 율리영해2길 7 (문수데시앙 2단지 아파트)  · 접수 2026-09-07~2026-09-08",
+    "url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000401&pblancNo=2026000401",
+    "target": "all",
+    "field": "housing",
+    "ageGroup": "all",
+    "region": "ulsan",
+    "source": "applyhome",
+    "id": "apt-2026000401"
+  },
+  {
+    "month": 9,
+    "day": 7,
+    "title": "브라운스톤 월곡 센트럴 청약접수",
+    "cat": "housing",
+    "desc": "서울특별시 성북구 하월곡동 70-4번지 일원 · 접수 2026-09-07~2026-09-10",
+    "url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000399&pblancNo=2026000399",
+    "target": "all",
+    "field": "housing",
+    "ageGroup": "all",
+    "region": "seoul",
+    "source": "applyhome",
+    "id": "apt-2026000399"
+  },
+  {
+    "month": 9,
+    "day": 7,
     "title": "의정부우정 A2블록 공공분양주택(본청약) 청약접수",
     "cat": "housing",
     "desc": "경기도 의정부시 녹양동 일원 의정부우정 공공주택지구 내 A-2블록 · 접수 2026-09-07~2026-09-17",
@@ -54,5 +82,19 @@
     "region": "gyeonggi",
     "source": "applyhome",
     "id": "apt-2026000409"
+  },
+  {
+    "month": 9,
+    "day": 14,
+    "title": "양주회천지구 A-26블록 공공분양주택 청약접수",
+    "cat": "housing",
+    "desc": "경기도 양주시 덕정동 일원 양주신도시 택지개발지구 내 A-26블록 · 접수 2026-09-14~2026-09-17",
+    "url": "https://www.applyhome.co.kr/ai/aia/selectAPTLttotPblancDetail.do?houseManageNo=2026000416&pblancNo=2026000416",
+    "target": "all",
+    "field": "housing",
+    "ageGroup": "all",
+    "region": "gyeonggi",
+    "source": "applyhome",
+    "id": "apt-2026000416"
   }
 ]
